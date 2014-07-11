@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta charset="UTF-8">
+
+  <title>OpenUi5 with OdataService</title>
+
+  <script id="sap-ui-bootstrap"
+    src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+    data-sap-ui-libs="sap.m"
+    data-sap-ui-theme="sap_bluecrystal"
+    data-sap-ui-xx-bindingSyntax="complex"
+    data-sap-ui-resourceroots='{
+        "com.mitsuruog.openui5.odata": "./",
+        "view": "./view",
+        "util": "./util"
+    }'>
+  </script>
+  <script>
+  new sap.m.Shell({
+    app: new sap.ui.core.ComponentContainer({
+      name : "com.mitsuruog.openui5.odata"
+    })
+  }).placeAt("content");
+  </script>
+
+</head>
+
+<body class="sapUiBody" id="content" />
+
+</html>
