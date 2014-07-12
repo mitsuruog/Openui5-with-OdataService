@@ -97,5 +97,67 @@ Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインス�
 
 ## Association
 
+### Association
+
+2つ以上のEntiryTypeの関連を定義したものです。RDBMSのスキーマ定義における外部キーに相当します。先ほどの2つのEntityType`Category`と`Entity`には関連がありますので、それを見てみましょう。
+
+````xml
+<Association Name="FK_Products_Categories">
+	<End Type="NorthwindModel.Category" Role="Categories" Multiplicity="0..1"/>
+	<End Type="NorthwindModel.Product" Role="Products" Multiplicity="*"/>
+	<ReferentialConstraint>
+		<Principal Role="Categories">
+			<PropertyRef Name="CategoryID"/>
+		</Principal>
+		<Dependent Role="Products">
+			<PropertyRef Name="CategoryID"/>
+		</Dependent>
+	</ReferentialConstraint>
+</Association>
+````
+2つの関連するEntityTypeとそれぞれのKeyが定義されています。`Multiplicity`にて関連の多重度が定義されています。いままでRDBMSに携わっていた方であれば、容易に理解できると思います。
 
 ## EntityConteinerとAssociationSet、EntitySet
+
+### EntityConteiner
+
+ODataServiceが外部に公開するI/Fを納めたコンテナ定義です。  
+上で挙げた`EntityType`や`Association`はODataService内部の定義であって、外部の利用者はEntityConteinerにて公開されているI/Fを利用します。
+
+### EntitySet
+
+EntityTypeの外部公開I/F名。`Product`の場合、EntitySetの名前が`Products`となっているため、外部からアクセスする場合は`Products`を利用します。慣例でEntityTypeの複数系で、Entitiesを表すことが多いようです。
+
+以下にEntityConteinerとEntitySetを抜粋します。
+
+````xml
+<EntityContainer xmlns:p6="http://schemas.microsoft.com/ado/2009/02/edm/annotation" Name="NorthwindEntities" m:IsDefaultEntityContainer="true" p6:LazyLoadingEnabled="true">
+	<EntitySet Name="Categories" EntityType="NorthwindModel.Category"/>
+	<EntitySet Name="CustomerDemographics" EntityType="NorthwindModel.CustomerDemographic"/>
+	<EntitySet Name="Customers" EntityType="NorthwindModel.Customer"/>
+	<EntitySet Name="Employees" EntityType="NorthwindModel.Employee"/>
+	<EntitySet Name="Order_Details" EntityType="NorthwindModel.Order_Detail"/>
+	<EntitySet Name="Orders" EntityType="NorthwindModel.Order"/>
+	<EntitySet Name="Products" EntityType="NorthwindModel.Product"/>
+	<EntitySet Name="Regions" EntityType="NorthwindModel.Region"/>
+	<EntitySet Name="Shippers" EntityType="NorthwindModel.Shipper"/>
+
+	.....
+
+</EntityContainer>
+````
+
+### AssociationSet
+
+EntitySetと同じくAssociationの外部公開I/F名。以下が`FK_Products_Categories`のAssociationSet定義です。
+
+
+````xml
+	<AssociationSet Name="FK_Products_Categories" Association="NorthwindModel.FK_Products_Categories">
+		<End Role="Categories" EntitySet="Categories"/>
+		<End Role="Products" EntitySet="Products"/>
+	</AssociationSet>
+````
+
+ODataServiceを利用した実際の開発では、このようにODataServiceが提供するMetadataを参照しながら行っていきます。  
+これまでのWeb開発での、RDBMSのスキーマ定義を参照しながら開発。というのと同じですね。
