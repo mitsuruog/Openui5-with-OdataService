@@ -96,6 +96,19 @@ module.exports = function(grunt) {
       server: {
         path: 'http://localhost:' + SERVER_PORT
       }
+    },
+
+    concat: {
+      doc: {
+        options: {
+          separator: '\r\n\r\n',
+          process: function(src, filepath) {
+            return src.replace(/..\/imgs/gi, './imgs');
+          }
+        },
+        src: ['docs/**/*.md'],
+        dest: 'README.md'
+      }
     }
 
   });
