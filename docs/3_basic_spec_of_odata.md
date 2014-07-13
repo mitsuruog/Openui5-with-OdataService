@@ -2,11 +2,12 @@
 ========
 
 ODataはHTTPをベースに構成されているため、1つのバックエンドとのやり取りを見る限る通常のHTTPとなんら変わりはありません。  
-バックエンドへの問い合わせは通常の`GET`、`POST`、`PUT`、`DELETE`で行い、返されるデータも`xml`、 `json`、`atom`形式です。  
-しかし、ODataはバックエンドとの手続きと標準化しているため、HTTP上の手続きを統合するための上位概念を持っており、これを理解しない限りODataを理解することはできません。
+バックエンドへの問い合わせは通常の`GET`、`POST`、`PUT`、`DELETE`で行い、返されるデータも`xml`、 `json`、`atom`形式です。
 
-この概念がMetadataと呼ばれる、ODataServiceが外部に公開するODataのデータモデルです。この章ではMetadataを見ながらのODataのデータモデルについて基本的なことを説明します。
+しかし、ODataはバックエンドとの間の複数のHTTP問い合わせを統合して標準化しています。そしてODataを返すバックエンドがODataServiceです。
+ODataServiceには、提供するデータAPIのI/F定義を外部に公開するMetadataと呼ばれるでデータ構造体を持っています。  
 
+ODataを理解する上では、このMetadataの構造を理解する事が必須です。この章ではMetadataを見ながらのODataのデータモデルについて基本的なことを説明します。  
 今回のチュートリアルで利用するNorthwindのMetadataをベースに進めていきます。Metadataはこちらで確認できます。
 <http://services.odata.org/V3/Northwind/Northwind.svc/$metadata>
 
@@ -149,7 +150,7 @@ EntityTypeの外部公開I/F名。`Product`の場合、EntitySetの名前が`Pro
 
 ### AssociationSet
 
-EntitySetと同じくAssociationの外部公開I/F名。以下が`FK_Products_Categories`のAssociationSet定義です。
+EntitySetと同じくAssociationの外部公開I/F名。以下が`FK_Products_Categories`のAssociationSet定義です。AssociationSetもEntityConteiner内部に格納されています。
 
 
 ````xml
@@ -160,4 +161,4 @@ EntitySetと同じくAssociationの外部公開I/F名。以下が`FK_Products_Ca
 ````
 
 ODataServiceを利用した実際の開発では、このようにODataServiceが提供するMetadataを参照しながら行っていきます。  
-これまでのWeb開発での、RDBMSのスキーマ定義を参照しながら開発。というのと同じですね。
+これまでのWeb開発での、RDBMSのスキーマ定義を参照しながら開発することと何ら変わりない事が理解できると思います。

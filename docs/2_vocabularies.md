@@ -9,3 +9,9 @@
 	* OdataServiceのURL
 * Metadata
 	* OdataServiceが提供するODataのデータモデル。通常はXML。
+* EntityType
+	* ODataのデータ構造体
+* Entities
+	* EntityTypeの実際のデータ。リスト形式。
+* Entity
+	* Entitiesの中の1件。
