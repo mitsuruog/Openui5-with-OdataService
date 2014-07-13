@@ -38,7 +38,7 @@ module.exports = function(grunt) {
     watch: {
       options: {
         nospawn: true,
-        livereload: LIVERELOAD_PORT
+        livereload: true
       },
       coffee: {
         files: ['<%= yeoman.coffee %>/**/*.coffee'],

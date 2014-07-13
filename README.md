@@ -3,11 +3,24 @@ Openui5-with-OdataService
 
 How to integrate OdataService in OpenUI5
 
-1. [ODataとは何か？](docs/1_what_is_ODate.md)
-1. [ODataを理解するための用語集](docs/2_vocabularies.md)
-1. [ODataの構造](docs/3_basic_spec_of_odata.md)
+1. [ODataとは何か？](#whatisOdata)
+1. [ODataを理解するための用語集](#vocabularies)
+1. [ODataの構造](#basic)
+1. [ODataServiceをURLで操作する](#manipulating)
+1. [OpenUI5とODataServiceの統合](#openui5withodata)
+	- 5.1. [はじめに]  
+	- 5.2. [雛形]  
+	- 5.3. [商品リストの実装](#productlist_impl)  
+		* 5.3.a [商品リストの取得](#productlist)  
+		* 5.3.b [商品名での検索](#search)  
+		* 5.3.c [商品リストのソート、フィルタ](#sortandfilter)  
+		* 5.3.d [商品詳細への画面遷移](#gotodetail)  
+	- 5.4. [商品詳細の実装](#product_impl)  
+		* 5.4.a [商品情報の参照](#product)  
+		* 5.4.b [カテゴリ情報の参照](#category)  
+		* 5.4.c [メーカー情報の参照](#supplier)  
 
-1. ODataとは何か？
+<a name="whatisodata">1. ODataとは何か？</a>
 ========
 <http://www.odata.org/> - Odata公式より。
 
@@ -27,7 +40,7 @@ How to integrate OdataService in OpenUI5
 ODataに関する情報はこちらが公式サイトとなっています。  
 <http://www.odata.org/>
 
-2. ODataを理解するための用語集
+<a name="vocabularies">2. ODataを理解するための用語集</a>
 ========
 
 これからのODataに関する技術的な内容を理解するための用語集です。なかにはOData標準にはないもので、私が作成した造語も含まれますのでご注意ください。
@@ -46,7 +59,7 @@ ODataに関する情報はこちらが公式サイトとなっています。
 	* Entitiesの中の1件。
 
 
-3. ODataの構造
+<a name="basic">3. ODataの構造</a>
 ========
 
 ODataはHTTPをベースに構成されているため、1つのバックエンドとのやり取りを見る限る通常のHTTPとなんら変わりはありません。  
@@ -212,7 +225,7 @@ ODataServiceを利用した実際の開発では、このようにODataService�
 これまでのWeb開発での、RDBMSのスキーマ定義を参照しながら開発することと何ら変わりない事が理解できると思います。
 
 
-4. ODataServiceをURLで操作する
+<a name="manipulating">4. ODataServiceをURLで操作する</a>
 ========
 
 早速、ODataServiceを操作してみましょう。先述した通り、ODataはデータAPIであるため、ブラウザのアドレスバーにURLを入力することによってアクセスすることが出来ます。 
@@ -221,7 +234,8 @@ URLのクエリパラメータをいくつか追加していくことでODataSer
 ODataServiceはNorthwindを利用します。Metadataを確認する場合はこちらを参照してください。
 <http://services.odata.org/V3/Northwind/Northwind.svc/$metadata>
 
-> ブラウザではなくデータAPIのテスト専用に作られたRESTクライアントツールを利用することを推奨します。こちらのChrome extentionsの[POATMAN](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm)は、非常に操作しやすくRESTクライアントとして一番のおすすめです。
+> ブラウザではなくデータAPIのテスト専用に作られたRESTクライアントツールを利用することを推奨します。こちらのChrome extentionsの[POATMAN](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm)は、非常に操作しやすくRESTクライアントとして一番のおすすめです。  
+ブラウザのみでデータアクセスする際は、こちらのChrome extentionsの[JSONVIew](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc)だけでもインストールしておくといいでしょう。
 
 ## OdataService
 
@@ -1051,3 +1065,32 @@ URL上でEntitiesのkeyを表現するためには、Entities名の後ろにkey�
 このように、URLパラメータを介してODataServiceを操作することができます。  
 これまでの話はバックエンドのODataServiceに関するものでしたが、実際にODataserviceを利用してWebシステムを構築するためには、対となるフロントエンドのライブラリが必要です。  
 以降は、標準でODataをサポートしているOpenUI5を利用して、実際にODataServiceを利用したWebシステムを構築していきます。
+
+
+<a name="productlist">5. OpenUI5とODataServiceの統合</a>
+========
+
+<a name="productlist_impl">5.3 商品リストの実装</a>
+========
+
+## <a name="productlist">5.3.a 商品リストの取得</a>
+
+
+## <a name="search">5.3.b 商品名での検索</a>
+
+
+## <a name="sortandfilter">5.3.c 商品リストのソート、フィルタ</a>
+
+
+## <a name="gotodetail">5.3.d 商品詳細への画面遷移</a> 
+
+<a name="product_impl">5.4 商品詳細の実装</a>
+========
+
+## <a name="product">5.4.a 商品情報の参照</a>
+
+
+## <a name="category">5.4.b カテゴリ情報の参照</a>
+
+
+## <a name="supplier">5.4.c メーカー情報の参照</a>

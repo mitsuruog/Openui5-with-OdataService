@@ -1,4 +1,4 @@
-4. ODataServiceをURLで操作する
+<a name="manipulating">4. ODataServiceをURLで操作する</a>
 ========
 
 早速、ODataServiceを操作してみましょう。先述した通り、ODataはデータAPIであるため、ブラウザのアドレスバーにURLを入力することによってアクセスすることが出来ます。 
@@ -7,7 +7,8 @@ URLのクエリパラメータをいくつか追加していくことでODataSer
 ODataServiceはNorthwindを利用します。Metadataを確認する場合はこちらを参照してください。
 <http://services.odata.org/V3/Northwind/Northwind.svc/$metadata>
 
-> ブラウザではなくデータAPIのテスト専用に作られたRESTクライアントツールを利用することを推奨します。こちらのChrome extentionsの[POATMAN](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm)は、非常に操作しやすくRESTクライアントとして一番のおすすめです。
+> ブラウザではなくデータAPIのテスト専用に作られたRESTクライアントツールを利用することを推奨します。こちらのChrome extentionsの[POATMAN](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm)は、非常に操作しやすくRESTクライアントとして一番のおすすめです。  
+ブラウザのみでデータアクセスする際は、こちらのChrome extentionsの[JSONVIew](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc)だけでもインストールしておくといいでしょう。
 
 ## OdataService
 
