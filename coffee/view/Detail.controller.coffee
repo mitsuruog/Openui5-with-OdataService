@@ -14,12 +14,6 @@ sap.ui.controller "view.Detail",
     @productId = evt.getParameters().arguments.id
 
     # ここでEntityにアクセスします。
-    @getView().bindElement "/Products(#{@productId})"
-
-    # tabもデータをバインドします
-    @tabs.getItems().forEach (item) ->
-      item.bindElement item.getKey()
-
 
   onNavBack: (evt) ->
     window.history.go -1

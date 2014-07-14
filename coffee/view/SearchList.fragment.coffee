@@ -9,12 +9,7 @@ sap.ui.jsfragment "view.SearchList",
       noDataText: "データがありません。"
       headerToolbar: @_createHeaderToolbar(oController)
       columns: @_createHeaderColumns(oController)
-      items: 
-        path: "/Products"
-        template: @_createTemplate(oController)
-        parameters:
-          expand: "Category, Supplier"
-          select: "*, Category/CategoryName, Supplier/CompanyName"
+      # ここにODataをバインドしていきます。
 
   _createHeaderToolbar: (oController) ->
     new sap.m.Toolbar
@@ -68,17 +63,17 @@ sap.ui.jsfragment "view.SearchList",
       press: [oController.onItemPress, oController]
       cells: [
         new sap.m.Text
-          text: "{Supplier/CompanyName}"
+          text: "メーカー名"
         new sap.m.Text
-          text: "{Category/CategoryName}"
+          text: "カテゴリ名"
         new sap.m.ObjectIdentifier
-          title: "{ProductName}"
-          text: "{QuantityPerUnit}"
+          title: "商品名"
+          text: "商品のスペック"
         new sap.m.ObjectNumber
-          number: "{UnitsOnOrder}"
+          number: "受注数"
         new sap.m.ObjectNumber
-          number: "{UnitsInStock}"
+          number: "在庫数"
         new sap.m.ObjectNumber
-          number: "{UnitPrice}"
+          number: "価格"
           unit: "USD"
       ]

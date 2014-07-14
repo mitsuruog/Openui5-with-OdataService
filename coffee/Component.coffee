@@ -39,14 +39,6 @@ sap.ui.core.UIComponent.extend "com.mitsuruog.openui5.odata.Component",
 
     # ここにOdataServiceのエンドポイントを設定します
     # /V3/Northwind/Northwind.svc/
-    endpoint = sap.ui.model.odata.ODataModel "/V3/Northwind/Northwind.svc/", true
-    @setModel endpoint
-
-    # バックエンドにデータ問い合わせの際のローディングイメージを表示します。
-    busy = new sap.m.BusyDialog
-      title: "Loading data"
-    endpoint.attachRequestSent ->　busy.open()
-    endpoint.attachRequestCompleted ->　busy.close()
 
   destroy: ->
     if @routeHandler

@@ -4,38 +4,18 @@
   sap.ui.jsfragment("view.ProductInfo", {
     createContent: function(oController) {
       return new sap.m.ObjectHeader({
-        title: "{ProductName}",
-        number: "{UnitPrice}",
+        title: "タイトル",
+        number: "価格",
         numberUnit: "USD",
         statuses: [
           new sap.m.ObjectStatus({
-            text: {
-              parts: [
-                {
-                  path: "UnitsInStock"
-                }, {
-                  path: "UnitsOnOrder"
-                }
-              ],
-              formatter: function(stock, order) {
-                return "" + order + " / " + stock + " (Order/Stock)";
-              }
-            },
-            state: {
-              path: "UnitsInStock",
-              formatter: function(stock) {
-                if (stock <= 10) {
-                  return "Error";
-                } else {
-                  return "Success";
-                }
-              }
-            }
+            text: "受注数と在庫数",
+            state: "Success"
           })
         ],
         attributes: [
           new sap.m.ObjectAttribute({
-            text: "{QuantityPerUnit}"
+            text: "商品のスペック"
           })
         ]
       });

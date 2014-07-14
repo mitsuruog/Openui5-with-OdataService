@@ -8,15 +8,7 @@
         growingTriggerText: "もっと見る",
         noDataText: "データがありません。",
         headerToolbar: this._createHeaderToolbar(oController),
-        columns: this._createHeaderColumns(oController),
-        items: {
-          path: "/Products",
-          template: this._createTemplate(oController),
-          parameters: {
-            expand: "Category, Supplier",
-            select: "*, Category/CategoryName, Supplier/CompanyName"
-          }
-        }
+        columns: this._createHeaderColumns(oController)
       });
     },
     _createHeaderToolbar: function(oController) {
@@ -80,18 +72,18 @@
         press: [oController.onItemPress, oController],
         cells: [
           new sap.m.Text({
-            text: "{Supplier/CompanyName}"
+            text: "メーカー名"
           }), new sap.m.Text({
-            text: "{Category/CategoryName}"
+            text: "カテゴリ名"
           }), new sap.m.ObjectIdentifier({
-            title: "{ProductName}",
-            text: "{QuantityPerUnit}"
+            title: "商品名",
+            text: "商品のスペック"
           }), new sap.m.ObjectNumber({
-            number: "{UnitsOnOrder}"
+            number: "受注数"
           }), new sap.m.ObjectNumber({
-            number: "{UnitsInStock}"
+            number: "在庫数"
           }), new sap.m.ObjectNumber({
-            number: "{UnitPrice}",
+            number: "価格",
             unit: "USD"
           })
         ]

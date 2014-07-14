@@ -9,11 +9,7 @@
       if (evt.getParameter("name") !== "Detail") {
         return;
       }
-      this.productId = evt.getParameters()["arguments"].id;
-      this.getView().bindElement("/Products(" + this.productId + ")");
-      return this.tabs.getItems().forEach(function(item) {
-        return item.bindElement(item.getKey());
-      });
+      return this.productId = evt.getParameters()["arguments"].id;
     },
     onNavBack: function(evt) {
       return window.history.go(-1);

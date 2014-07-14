@@ -11,64 +11,37 @@
           }), new sap.m.Label({
             text: "SupplierID"
           }), new sap.m.Text({
-            text: "{SupplierID}"
+            text: "メーカーID"
           }), new sap.m.Label({
             text: "CompanyName"
           }), new sap.m.Text({
-            text: "{CompanyName}"
+            text: "メーカー名"
           }), new sap.ui.core.Title({
             text: "Contact"
           }), new sap.m.Label({
             text: "ContactName"
           }), new sap.m.Text({
-            text: "{ContactName}"
+            text: "担当者"
           }), new sap.m.Label({
             text: "ContactTitle"
           }), new sap.m.Text({
-            text: "{ContactTitle}"
+            text: "肩書き"
           }), new sap.m.Label({
             text: "PostalCode"
           }), new sap.m.Text({
-            text: "{PostalCode}"
+            text: "郵便番号"
           }), new sap.m.Label({
             text: "Addreess"
           }), new sap.m.Text({
-            text: {
-              parts: [
-                {
-                  path: "Country"
-                }, {
-                  path: "Region"
-                }, {
-                  path: "City"
-                }, {
-                  path: "Address"
-                }
-              ],
-              formatter: function(country, region, city, address) {
-                if (country == null) {
-                  country = "";
-                }
-                if (region == null) {
-                  region = "";
-                }
-                if (city == null) {
-                  city = "";
-                }
-                if (address == null) {
-                  address = "";
-                }
-                return "" + country + " " + region + " " + city + " " + address;
-              }
-            }
+            text: "住所"
           }), new sap.m.Label({
             text: "Phone"
           }), new sap.m.Text({
-            text: "{Phone}"
+            text: "電話番号"
           }), new sap.m.Label({
             text: "HomePage"
           }), new sap.m.Text({
-            text: "{HomePage}"
+            text: "Webサイト"
           })
         ]
       });

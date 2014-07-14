@@ -11,15 +11,15 @@
           }), new sap.m.Label({
             text: "CategoryID"
           }), new sap.m.Text({
-            text: "{CategoryID}"
+            text: "カテゴリID"
           }), new sap.m.Label({
             text: "CategoryName"
           }), new sap.m.Text({
-            text: "{CategoryName}"
+            text: "カテゴリ名"
           }), new sap.m.Label({
             text: "Description"
           }), new sap.m.Text({
-            text: "{Description}"
+            text: "説明"
           })
         ]
       });

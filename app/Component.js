@@ -30,23 +30,12 @@
       }
     },
     init: function() {
-      var busy, endpoint, router;
+      var router;
       jQuery.sap.require("sap.m.routing.RouteMatchedHandler");
       sap.ui.core.UIComponent.prototype.init.apply(this, arguments);
       router = this.getRouter();
       this.routeHandler = new sap.m.routing.RouteMatchedHandler(router);
-      router.initialize();
-      endpoint = sap.ui.model.odata.ODataModel("/V3/Northwind/Northwind.svc/", true);
-      this.setModel(endpoint);
-      busy = new sap.m.BusyDialog({
-        title: "Loading data"
-      });
-      endpoint.attachRequestSent(function() {
-        return 　busy.open();
-      });
-      return endpoint.attachRequestCompleted(function() {
-        return 　busy.close();
-      });
+      return router.initialize();
     },
     destroy: function() {
       if (this.routeHandler) {
