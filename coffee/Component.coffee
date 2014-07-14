@@ -38,7 +38,7 @@ sap.ui.core.UIComponent.extend "com.mitsuruog.openui5.odata.Component",
     router.initialize()
 
     # ここにOdataServiceのエンドポイントを設定します
-    # /V3/Northwind/Northwind.svc/
+    # /V2/Northwind/Northwind.svc/
 
   destroy: ->
     if @routeHandler
