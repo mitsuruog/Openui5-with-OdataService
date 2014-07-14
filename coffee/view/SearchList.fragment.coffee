@@ -9,6 +9,7 @@ sap.ui.jsfragment "view.SearchList",
       noDataText: "データがありません。"
       headerToolbar: @_createHeaderToolbar(oController)
       columns: @_createHeaderColumns(oController)
+      # ここにODataをバインドしていきます。
       items: 
         path: "/Products"
         template: @_createTemplate(oController)

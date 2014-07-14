@@ -103,7 +103,7 @@ module.exports = function(grunt) {
         options: {
           separator: '\r\n\r\n',
           process: function(src, filepath) {
-            return src.replace(/..\/imgs/gi, './imgs');
+            return src.replace(/img/gi, 'docs/img');
           }
         },
         src: ['docs/**/*.md'],

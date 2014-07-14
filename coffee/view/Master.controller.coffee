@@ -12,6 +12,7 @@ sap.ui.controller "view.Master",
       return
 
   onSearch: (evt) ->
+    # ここに検索処理を書きます。
     query = @query.getValue()
     #
     # 検索条件は"Contains", EQ", "StartsWith"など
