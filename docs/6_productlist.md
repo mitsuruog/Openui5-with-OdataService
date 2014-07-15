@@ -149,9 +149,43 @@ filterの演算子は`sap.ui.model.FilterOperator`に定義されているもの
 
 では、商品名の部分に`Cha`を入力して検索してみましょう。  
 結果は以下の通りです。
-![商品名検索](img/5.3.b-1.png)
+![商品名検索](docs/img/5.3.b-1.png)
 
-これで、商品検索処理も実現することができました。
+このままでもいいのですが、検索時などのODataServiceへのデータアクセスの際にユーザーに対してフィードバックがありませんので、データアクセス時にローディングイメージを表示するようにしましょう。OpeUI5ではODataServiceはODataModelとして取り扱います。ODataModelにはODataServiceへのデータアクセスに関連するライフサイクルイベントが利用できますので、今回はライフサイクルイベントを利用してローディングイメージを表示させてみましょう。  
+`Componemt.coffee`の`init`を変更しましょう。  
+
+*Componemt.coffee:init()*
+```coffeescript
+
+  init: ->
+
+    ...
+
+    # ここにOdataServiceのエンドポイントを設定します
+    # /V3/Northwind/Northwind.svc/
+    endpoint = sap.ui.model.odata.ODataModel "/V3/Northwind/Northwind.svc/", true
+    @setModel endpoint
+
+    # バックエンドにデータ問い合わせの際のローディングイメージを表示します。
+    busy = new sap.m.BusyDialog
+      title: "Loading data"
+    endpoint.attachRequestSent ->　busy.open()
+    endpoint.attachRequestCompleted ->　busy.close()
+
+    ...
+
+```
+`new sap.m.BusyDialog`でローディングイメージを表示するダイアログを生成します。上で作成したODataModeオブジェクトに対して`attachRequestSent`と`attachRequestCompleted`にてライフサイクルイベントが発生したタイミングで処理を割り込ませる事が可能です。  
+`attachRequestSent`はODataServiceに対するデータアクセスが開始されたタイミングで発生します。
+`attachRequestCompleted`はデータアクセスが完了したタイミングで発生します。成功、失敗は問いません。
+
+先ほどと同じ商品名の部分に`Cha`を入力して検索してみましょう。  
+結果は以下の通りです。
+![商品名検索ローディングあり](docs/img/5.3.b-2.png)
+
+実際には、ローディング開始のタイミングが少し遅いと思いますので、ボタンを押したタイミングでローディングを表示させるなど、工夫が必要です。
+
+ここまでで商品検索処理を実現することができました。
 
 ## <a name="sortandfilter">5.3.c 商品リストのソート、フィルタ</a>
 
