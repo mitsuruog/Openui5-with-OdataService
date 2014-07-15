@@ -4,6 +4,7 @@ sap.ui.jsfragment "view.ViewSettings",
     new sap.m.ViewSettingsDialog
       title: "ソート&フィルタ"
       confirm: [oController.onChangeViewSettings, oController]
+      # ここにソート条件を書きます
       sortItems: [
         new sap.m.ViewSettingsItem
           text: "ProductName"
@@ -25,6 +26,7 @@ sap.ui.jsfragment "view.ViewSettings",
           text: "Price"
           key: "UnitPrice"
       ]
+      # ここにフィルタ条件を書きます
       filterItems: [
         new sap.m.ViewSettingsFilterItem
           text: "Order"

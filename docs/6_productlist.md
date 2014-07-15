@@ -2,7 +2,7 @@
 ========
 
 ## <a name="productlist">5.3.a 商品リストの取得</a>
-では、実際に商品リストを取得してTable上に表示させてみましょう。`view/SearchList.fragment.coffee`を開いてください。`view/SearchList.fragment.coffee`は商品リストテーブルのUI部分を切り出したUI部品です。商品リストテーブルUIに関連する変更はこちらに記述していきます。
+では、実際に商品リストを取得してTable上に表示させてみましょう。`view/SearchList.fragment.coffee`を開いてください。`view/SearchList.fragment.coffee`は商品リストテーブルのUI部分を切り出したUI部品です。商品リストテーブルUI（以下、商品リストテーブル）に関連する変更はこちらに記述していきます。
 
 まず、`view/SearchList.fragment.coffee`の`createContent`にて利用するODataServiceのEntitiesを指定します。このUIとODataを関連づける作業を**データバインド**と呼びます。
 
@@ -189,5 +189,184 @@ filterの演算子は`sap.ui.model.FilterOperator`に定義されているもの
 
 ## <a name="sortandfilter">5.3.c 商品リストのソート、フィルタ</a>
 
+ではまずソート機能から作っていきましょう。  
+テーブルの右上の![セッティングボタン](docs/docs/img/5.3.c-1.png)こちらのアイコンを押すと、テーブルの表示設定を変更できるダイアログ（以下、ViewSettingsダイアログ）が表示されます。まだソート項目には固定値が表示されているため、実際のテーブルの項目を表示させるようにしましょう。  
+`ViewSettings.fragment.coffee`の`createContent`を変更しましょう。
 
-## <a name="gotodetail">5.3.d 商品詳細への画面遷移</a> 
+*ViewSettings.fragment.coffee:createContent()*
+```coffeescript
+
+  ...
+
+  createContent: (oController) ->
+    new sap.m.ViewSettingsDialog
+      title: "ソート&フィルタ"
+      confirm: [oController.onChangeViewSettings, oController]
+      # ここにソート条件を書きます
+      sortItems: [
+        new sap.m.ViewSettingsItem
+          text: "ProductName"
+          key: "ProductName"
+          selected: true
+        new sap.m.ViewSettingsItem
+          text: "Category"
+          key: "Category/CategoryName"
+        new sap.m.ViewSettingsItem
+          text: "Supplier"
+          key: "Supplier/CompanyName"
+        new sap.m.ViewSettingsItem
+          text: "Order"
+          key: "UnitsOnOrder"
+        new sap.m.ViewSettingsItem
+          text: "Stock"
+          key: "UnitsInStock"
+        new sap.m.ViewSettingsItem
+          text: "Price"
+          key: "UnitPrice"
+      ]
+      filterItems: [
+
+      ...
+
+```
+`sap.m.ViewSettingsDialog`の`sortItems`プロパティのArrayに`sap.m.ViewSettingsItem`を追加していきます。  
+`sap.m.ViewSettingsItem`が実際のViewSettingsダイアログにソート項目として表示されるものです。`text`には表示ラベル、`key`はソートを選択した場合のキー項目に該当します。基本的に何を設定してもいいのですが、後の処理での使い易さを考慮して、通常はODataのpathを設定します。
+
+結果は以下の通りです。
+![ソートダイアログ](docs/img/5.3.c-2.png)
+
+次に実際のソート処理を作成していきます。ソート処理は前め商品名検索と基本的には同じです。  
+`Master.conrtoller.coffee`の`onChangeViewSettings`を変更しましょう。
+
+*Master.conrtoller.coffee:onChangeViewSettings()*
+```coffeescript
+
+  ...
+
+  onChangeViewSettings: (evt) ->
+    # ここにソートとフィルタ処理を書きます。
+    params = evt.getParameters()
+    binding = @productList.getBinding "items"
+
+    #ソート設定
+    sortSettings = []
+    if params.sortItem
+      path = params.sortItem.getKey()
+      descending = params.sortDescending
+      sortSettings.push new sap.ui.model.Sorter(path, descending)
+
+    binding.sort sortSettings
+
+    ...
+
+```
+商品リストテーブルのデータバインド設定に対して`new sap.ui.model.Sorter`オブジェクトを設定します。
+
+では、Stockの降順でソートしてみます。  
+結果は以下の通りです。
+![ソート機能](docs/img/5.3.c-3.png)
+
+Stockの大きい順に表示することができました。早速次はフィルタ機能を作っていきます。  
+ソートと同様にViewSettingsダイアログの設定から行います。  
+
+`ViewSettings.fragment.coffee`の`createContent`を変更しましょう。
+
+*ViewSettings.fragment.coffee:createContent()*
+```coffeescript
+
+  ...
+
+  createContent: (oController) ->
+    new sap.m.ViewSettingsDialog
+      title: "ソート&フィルタ"
+      confirm: [oController.onChangeViewSettings, oController]
+      # ここにソート条件を書きます
+      sortItems: [
+        
+        ...
+
+      ]
+      # ここにフィルタ条件を書きます
+      filterItems: [
+        new sap.m.ViewSettingsFilterItem
+          text: "Order"
+          key: "UnitsOnOrder"
+          multiSelect: false
+          items: [
+            new sap.m.ViewSettingsItem
+              text: "less than 10"
+              key: "UnitsOnOrder___LE___10___X"
+            new sap.m.ViewSettingsItem
+              text: "between 10 and 20"
+              key: "UnitsOnOrder___BT___10___20"
+            new sap.m.ViewSettingsItem
+              text: "greater than 20"
+              key: "UnitsOnOrder___GT___20___X"
+          ]
+        new sap.m.ViewSettingsFilterItem
+          text: "Stock"
+          key: "UnitsInStock"
+          multiSelect: false
+          items: [
+            new sap.m.ViewSettingsItem
+              text: "less than 10"
+              key: "UnitsInStock___LE___10___X"
+            new sap.m.ViewSettingsItem
+              text: "between 10 and 20"
+              key: "UnitsInStock___BT___10___20"
+            new sap.m.ViewSettingsItem
+              text: "greater than 20"
+              key: "UnitsInStock___GT___20___X"
+          ]
+      ]
+
+      ...
+
+```
+`sap.m.ViewSettingsDialog`の`filterItems`プロパティのArrayに`ssap.m.ViewSettingsFilterItem`を追加していきます。  
+`text`と`key`はソート時と同じです、フィルタ条件がいくつかあるため`items`プロパティに`sap.m.ViewSettingsItem`を複数設定します。  
+`sap.m.ViewSettingsItem`の`key`の値は`UnitsOnOrder___LE___10___X`のようになっていますが、後のフィルタ処理にて`___`を区切って分割して値を利用しています。  
+ちょっと強引な実装ですね。
+
+結果は以下の通りです。
+![ソートダイアログフィルタ](docs/img/5.3.c-4.png)
+
+`Master.conrtoller.coffee`の`onChangeViewSettings`を変更しましょう。
+
+*Master.conrtoller.coffee:onChangeViewSettings()*
+```coffeescript
+
+  ...
+
+  onChangeViewSettings: (evt) ->
+
+    # ここにソートとフィルタ処理を書きます。
+    params = evt.getParameters()
+    binding = @productList.getBinding "items"
+
+    #ソート設定
+    sortSettings = []
+    if params.sortItem
+      path = params.sortItem.getKey()
+      descending = params.sortDescending
+      sortSettings.push new sap.ui.model.Sorter(path, descending)
+    binding.sort sortSettings
+
+    #フィルタ設定
+    filterSettings = []
+    jQuery.each params.filterItems, (i, item) ->
+      settingArray = item.getKey().split "___"
+      filter = new sap.ui.model.Filter settingArray[0], settingArray[1], settingArray[2], settingArray[3]
+      filterSettings.push filter
+    binding.filter filterSettings
+
+    ...
+
+```
+いままで行ってきた商品名検索とソート処理とほとんど同じだとおもいます。
+
+では、orderが10〜20の範囲でフィルタしてみます。    
+結果は以下の通りです。
+![フィルタ機能](docs/img/5.3.c-5.png)
+
+ここまででソートとフィルタ機能を作る事ができました。

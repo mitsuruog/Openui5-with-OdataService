@@ -14,7 +14,6 @@ How to integrate OdataService in OpenUI5
 		* 5.3.a [商品リストの取得](#productlist)  
 		* 5.3.b [商品名での検索](#search)  
 		* 5.3.c [商品リストのソート、フィルタ](#sortandfilter)  
-		* 5.3.d [商品詳細への画面遷移](#gotodetail)  
 	- 5.4. [商品詳細の実装](#product_impl)  
 		* 5.4.a [商品情報の参照](#product)  
 		* 5.4.b [カテゴリ情報の参照](#category)  

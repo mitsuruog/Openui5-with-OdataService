@@ -32,6 +32,7 @@ sap.ui.controller "view.Master",
     @_viewSetting.open()
 
   onChangeViewSettings: (evt) ->
+    # ここにソートとフィルタ処理を書きます。
     params = evt.getParameters()
     binding = @productList.getBinding "items"
 
