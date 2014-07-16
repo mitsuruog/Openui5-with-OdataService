@@ -47,7 +47,7 @@ module.exports = function(grunt) {
       app: {
         files: [
           '<%= yeoman.app %>/*.html',
-          '<%= yeoman.app %>/css/**/*.css',
+          '<%= yeoman.app %>/style/**/*.css',
           '<%= yeoman.app %>/**/*.js'
         ]
       }
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
         hostname: 'localhost'
       },
       proxies: [{
-        context: '/V3',
+        context: '/V2',
         host: "services.odata.org",
         changeOrigin: true
       }],

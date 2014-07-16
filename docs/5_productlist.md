@@ -1,8 +1,26 @@
 <a name="productlist_impl">5.3 商品リストの実装</a>
 ========
 
+## ODataServiceのendpoint定義
+
+まず、本アプリケーションにて利用するODataServiceのendpointを定義します。endpointの定義はアプリケーションで共用するため、`Componemt.coffee`の`init`内に記述します。
+
+*Componemt.coffee:init()*
+```coffeescript
+init: ->
+  
+  ...
+
+  # ここにOdataServiceのエンドポイントを設定します
+  # /V2/Northwind/Northwind.svc/
+  endpoint = sap.ui.model.odata.ODataModel "/V2/Northwind/Northwind.svc/", true
+  @setModel endpoint
+```
+
+`sap.ui.model.odata.ODataModel`を作成し、名前なしのグローバルModelとしてアプリケーション内に保持します。
+
 ## <a name="productlist">5.3.a 商品リストの取得</a>
-では、実際に商品リストを取得してTable上に表示させてみましょう。`view/SearchList.fragment.coffee`を開いてください。`view/SearchList.fragment.coffee`は商品リストテーブルのUI部分を切り出したUI部品です。商品リストテーブルUI（以下、商品リストテーブル）に関連する変更はこちらに記述していきます。
+商品リストを取得してTable上に表示させてみましょう。`view/SearchList.fragment.coffee`を開いてください。`view/SearchList.fragment.coffee`は商品リストテーブルのUI部分を切り出したUI部品です。商品リストテーブルUI（以下、商品リストテーブル）に関連する変更はこちらに記述していきます。
 
 まず、`view/SearchList.fragment.coffee`の`createContent`にて利用するODataServiceのEntitiesを指定します。このUIとODataを関連づける作業を**データバインド**と呼びます。
 
@@ -60,15 +78,15 @@
       ]
 ```
 テンプレート定義は`sap.m.ColumnListItem`を作成して返します。  
-`cells`の中に各セルとなるUIコントロールが定義されている構造が読み取れると思います。各UIコントロールの中の`{`から`}`の中に含まれている文字列が**path**よ呼ばれるもので、ODataのEntitiesからの相対的な位置を指定して各UIコントロールに対してピンポイントでデータバインドを定義しています。  
-プロパティからさらに子のプロパティを参照する場合の区切り文字は`/`を指定します。まるで、windwosのフォルダの`¥`指定のようですね。
+`cells`の中に各セルとなるUIコントロールが定義されている構造が読み取れると思います。各UIコントロールの中の`{`から`}`の中に含まれている文字列が**path**と呼ばれるもので、ODataのEntitiesからの相対的な位置を指定して各UIコントロールに対してピンポイントでデータバインドを定義しています。  
+プロパティからさらに子のプロパティを参照する場合の区切り文字は`/`を指定します。
 
 結果は以下の通りです。
 ![templateもデータバインドのみ](img/5.3.a-2.png)
 
-`Product`の内容は表示することができましたが、`Supplier`と`Category`の内容が表示されません。これはODataのデータ取得の際に、返却されるデータにこれらの関連するAssociationのデータが含まれていないためです。
+`Product`の内容は表示することができましたが、`Supplier`と`Category`の内容が表示されません。これはODataのデータ取得の際に、返却されるデータにこれらの関連するEntityのデータが含まれていないためです。
 
-返却されくるデータに関連するAssociationのデータを含めるためには、`$expand`と`$select`を利用します。これらをOpenUI5で扱うためには、先ほどの取り上げた商品リストテーブルUIのデータバインドする際に、パラメータを渡すように設定します。  
+返却されくるデータに関連するEntityのデータを含めるためには、`$expand`と`$select`を利用します。これらをOpenUI5で扱うためには、先ほどの取り上げた商品リストテーブルUIのデータバインドする際に、パラメータを渡すように設定します。  
 `view/SearchList.fragment.coffee`の`createContent`のデータバインド部分を変更します。
 
 *view/SearchList.fragment.coffee:createContent()*
@@ -96,7 +114,7 @@
     ...
 
 ```
-データバインドする際のプロパティに`parameters`を含める事で、ODataでデータアクセスするさいにパラメータを渡すことができるようになります。
+データバインドする際のプロパティに`parameters`を含める事で、ODataへデータアクセスする際にパラメータを渡すことができるようになります。
 
 結果は以下の通りです。
 ![商品リスト](img/5.3.a-3.png)
@@ -153,7 +171,8 @@ filterの演算子は`sap.ui.model.FilterOperator`に定義されているもの
 結果は以下の通りです。
 ![商品名検索](img/5.3.b-1.png)
 
-このままでもいいのですが、検索時などのODataServiceへのデータアクセスの際にユーザーに対してフィードバックがありませんので、データアクセス時にローディングイメージを表示するようにしましょう。OpeUI5ではODataServiceはODataModelとして取り扱います。ODataModelにはODataServiceへのデータアクセスに関連するライフサイクルイベントが利用できますので、今回はライフサイクルイベントを利用してローディングイメージを表示させてみましょう。  
+このままでもいいのですが、検索時などのODataServiceへのデータアクセスの際にユーザーに対してフィードバックがありませんので、データアクセス時にローディングイメージを表示するようにしましょう。  
+OpenUI5ではODataServiceはODataModelとして取り扱います。ODataModelにはODataServiceへのデータアクセスに関連するライフサイクルイベントが利用できますので、今回はライフサイクルイベントを利用してローディングイメージを表示させてみましょう。  
 `Componemt.coffee`の`init`を変更しましょう。  
 
 *Componemt.coffee:init()*

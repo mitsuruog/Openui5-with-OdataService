@@ -36,7 +36,7 @@
       router = this.getRouter();
       this.routeHandler = new sap.m.routing.RouteMatchedHandler(router);
       router.initialize();
-      endpoint = sap.ui.model.odata.ODataModel("/V3/Northwind/Northwind.svc/", true);
+      endpoint = sap.ui.model.odata.ODataModel("/V2/Northwind/Northwind.svc/", true);
       this.setModel(endpoint);
       busy = new sap.m.BusyDialog({
         title: "Loading data"
