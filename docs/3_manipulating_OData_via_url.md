@@ -60,6 +60,8 @@ ODataServiceはNorthwindを利用します。Metadataを確認する場合はこ
 結果は`EntityContainer`と同等のものが返されていることが分かります。これがNorthwindのODataServiceが提供するデータAPIのI/F定義です。  
 より詳細な内容は次の`Metadata`を取得して確認します。
 
+**[[⬆]](#table)**
+
 ### Metadata
 Metadataを取得するためにはendpointのURLの後ろに`$metadata`を付与します。  
 <http://services.odata.org/V3/Northwind/Northwind.svc/$metadata>
@@ -133,6 +135,8 @@ This XML file does not appear to have any style information associated with it. 
 ````
 MetadataはXMLで返されます。  
 OdataServiceは複数のEntityを統合して公開できる能力を持っているため、複数のEntityを利用する場合は、EntityごとにODataServiceを作成してクライアントマッシュアップで統合するよりは、単一のODataServiceの中に含めてしまう方が経験的に良いと考えています。
+
+**[[⬆]](#table)**
 
 ## Entitiesアクセス
 
@@ -760,6 +764,8 @@ ODataには関連するデータ取得についてもURLパラメータから指
 ````
 これで望みのデータを取得することができました。
 
+**[[⬆]](#table)**
+
 ## Entityアクセス
 今まではリストに対するデータアクセスでしたが、ここからは単一のEntityに対する操作です。
 
@@ -838,3 +844,5 @@ URL上でEntitiesのkeyを表現するためには、Entities名の後ろにkey�
 このように、URLパラメータを介してODataServiceを操作することができます。  
 これまでの話はバックエンドのODataServiceに関するものでしたが、実際にODataserviceを利用してWebシステムを構築するためには、対となるフロントエンドのライブラリが必要です。  
 以降は、標準でODataをサポートしているOpenUI5を利用して、実際にODataServiceを利用したWebシステムを構築していきます。
+
+**[[⬆]](#table)**

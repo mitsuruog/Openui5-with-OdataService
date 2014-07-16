@@ -18,3 +18,15 @@ init: ->
   @setModel endpoint
 ```
 `sap.ui.model.odata.ODataModel`を作成し、名前なしのグローバルModelとしてアプリケーション内に保持します。
+
+**[[⬆]](#table)**
+
+<a name="install">5.1. 導入</a>
+========
+
+**[[⬆]](#table)**
+
+<a name="project">5.2. プロジェクトの説明</a>
+========
+
+**[[⬆]](#table)**
