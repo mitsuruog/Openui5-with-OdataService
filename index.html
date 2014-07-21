@@ -1,0 +1,2259 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Openui5-with-odataservice : How to integrate OdataService in OpenUI5" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Openui5-with-odataservice</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mitsuruog/Openui5-with-OdataService">View on GitHub</a>
+
+          <h1 id="project_title">Openui5-with-odataservice</h1>
+          <h2 id="project_tagline">How to integrate OdataService in OpenUI5</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mitsuruog/Openui5-with-OdataService/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mitsuruog/Openui5-with-OdataService/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="openui5%E3%81%A8odata%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6web%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E4%BD%9C%E3%82%8B" class="anchor" href="#openui5%E3%81%A8odata%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6web%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E4%BD%9C%E3%82%8B"><span class="octicon octicon-link"></span></a>OpenUI5とODataを使ってWebアプリケーションを作る</h1>
+
+<p>OpenUI5とOdataServiceをWebアプリケーションとしてどのように統合すればよいか。</p>
+
+<p>How to integrate OdataService in OpenUI5</p>
+
+<p><img src="docs/img/1.png" alt="OpenUI5withOData"></p>
+
+<h1>
+<a name="%E7%9B%AE%E6%AC%A1" class="anchor" href="#%E7%9B%AE%E6%AC%A1"><span class="octicon octicon-link"></span></a><a name="table">目次</a>
+</h1>
+
+<ol>
+<li><a href="#intro">はじめに</a></li>
+<li><a href="#whatisOdata">なぜODataが注目されるべきなのか？</a></li>
+<li><a href="#basic">ODataの基本</a></li>
+<li><a href="#manipulating">ODataServiceをURLで操作する</a></li>
+<li>
+<a href="#openui5withodata">OpenUI5とODataServiceの統合</a>
+
+<ul>
+<li>5.1. <a href="#install">導入・準備</a><br>
+</li>
+<li>5.2. <a href="#project">プロジェクトの説明</a>
+</li>
+<li>5.3. <a href="#productlist_impl">商品リストの実装</a>
+
+<ul>
+<li>5.3.a <a href="#productlist">商品リストの取得</a><br>
+</li>
+<li>5.3.b <a href="#search">商品名での検索</a><br>
+</li>
+<li>5.3.c <a href="#sortandfilter">商品リストのソート、フィルタ</a><br>
+</li>
+</ul>
+</li>
+<li>5.4. <a href="#product_impl">商品詳細の実装</a>
+
+<ul>
+<li>5.4.a <a href="#product">商品情報の参照</a>
+</li>
+<li>5.4.b <a href="#category">カテゴリー情報とメーカー情報の参照</a><br>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a href="#summary">まとめ</a><br>
+</li>
+</ol><h1>
+<a name="1-%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB" class="anchor" href="#1-%E3%81%AF%E3%81%98%E3%82%81%E3%81%AB"><span class="octicon octicon-link"></span></a><a name="intro">1. はじめに</a>
+</h1>
+
+<p>このチュートリアルはOpenUI5とODataServiceを利用したWebアプリケーションを構築する上で、ODataをOpenUI5内でどのように扱えば良いかを中心に行います。  </p>
+
+<p>特にODataが持つURLパラメータを組み合わせによる柔軟なデータアクセス方法と、OpenUI5というUIフレームワークを組み合わせた場合に実現できる、データアクセスからUIへのフィードバックがシームレスに統合され隠蔽された、これからの企業向けWebアプリケーション開発における「OpenUI5＋ODataService」という新しい可能性（選択肢）を感じてもらえればと思います。</p>
+
+<p>OpenUI5のサポートが「V2」までであるため、ODataのバージョンは「2」を前提に説明します。</p>
+
+<h1>
+<a name="2-%E3%81%AA%E3%81%9Codata%E3%81%8C%E6%B3%A8%E7%9B%AE%E3%81%95%E3%82%8C%E3%82%8B%E3%81%B9%E3%81%8D%E3%81%AA%E3%81%AE%E3%81%8B" class="anchor" href="#2-%E3%81%AA%E3%81%9Codata%E3%81%8C%E6%B3%A8%E7%9B%AE%E3%81%95%E3%82%8C%E3%82%8B%E3%81%B9%E3%81%8D%E3%81%AA%E3%81%AE%E3%81%8B"><span class="octicon octicon-link"></span></a><a name="whatisodata">2. なぜODataが注目されるべきなのか？</a>
+</h1>
+
+<p>まず、なぜ今ODataが注目されるべきなのか、OpenUI5というUIフレームワークとODataが統合された時、何かメリットなのか少し背景など話しながら理解していきましょう。</p>
+
+<h3>
+<a name="odata%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%8B" class="anchor" href="#odata%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%8B"><span class="octicon octicon-link"></span></a>ODataとは何か？</h3>
+
+<p><a href="http://www.odata.org/">http://www.odata.org/</a> - Odata公式より。</p>
+
+<blockquote>
+<p>OData is a standardized protocol for creating and consuming data APIs. OData builds on core protocols like HTTP and commonly accepted methodologies like REST. The result is a uniform way to expose full-featured data APIs.  </p>
+
+<p>ODataとはデータAPIを作成し利用するために標準化されたプロトコルです。ODataはHTTPプロトコルと、一般的に浸透しているRESTという方法論で構成されています。つまり、これらのフル機能を満たすDataAPIを公開するために統一された方法です。</p>
+</blockquote>
+
+<p>つまり、</p>
+
+<p>「Webシステムにおける、フロントエンドとバックエンドとの面倒なAjax問い合わせの手続きを標準化したプロトコル」</p>
+
+<p>プロトコルと言われてますが難しく捉える必要はありません。<br>
+まったく新しい概念ではなく、既存のよくあるAjax上のやり取りを仕様化したものだと思っていただいて結構です。</p>
+
+<p>旧来から、システムをいくつかのレイアー構造で分割し、レイアーをまたがる部分を抽象化、標準化する動きはよく見られました。<br>
+代表的なものでは、アプリケーションからRDBMSへのデータアクセスの方法を標準化したODBCが存在します。<br>
+「OData」は、フロントエンドからバックエンドへのデータアクセスを標準化した、いわばODBCのWeb版です。ODataはMicrosoft、IBM、SAP、Citrix社が中心となりデータアクセスプロトコルの業界標準となるよう動いています。 </p>
+
+<p>ODataに関する情報はこちらが公式サイトはこちらです。<br><a href="http://www.odata.org/">http://www.odata.org/</a></p>
+
+<h3>
+<a name="%E6%98%A8%E4%BB%8A%E3%81%AEweb%E9%96%8B%E7%99%BA%E3%81%AE%E6%B5%81%E3%82%8C" class="anchor" href="#%E6%98%A8%E4%BB%8A%E3%81%AEweb%E9%96%8B%E7%99%BA%E3%81%AE%E6%B5%81%E3%82%8C"><span class="octicon octicon-link"></span></a>昨今のWeb開発の流れ</h3>
+
+<p>昨今、Ajaxの登場によりWebアプリケーションにおいて、フロントエンドの重要性が増してきていることは周知の事実かと思います。<br>
+それに伴ってフロントエンドの実装が高度化、複雑化してきたこともあり、ソリューションの1つとして様々なクライアントMVCフレームワーク（以下、クライアントMVC）が台頭してきました。</p>
+
+<p>現在は、いくつかのクライアントMVCを中心とするフロントエンド開発のエコシステムができつつあり、今後の企業向けWebシステムにて普及・活用していくためには、もう一歩踏み込んだ、バックエンドのWebAPIとの間のベストプラクティスの蓄積と標準化、そして統合ソリューションが必要だと感じています。  </p>
+
+<h3>
+<a name="%E3%83%87%E3%83%BC%E3%82%BF%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E6%96%B9%E6%B3%95%E3%82%92%E6%A8%99%E6%BA%96%E5%8C%96%E3%81%99%E3%82%8Bodata%E3%81%AE%E7%99%BB%E5%A0%B4" class="anchor" href="#%E3%83%87%E3%83%BC%E3%82%BF%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E6%96%B9%E6%B3%95%E3%82%92%E6%A8%99%E6%BA%96%E5%8C%96%E3%81%99%E3%82%8Bodata%E3%81%AE%E7%99%BB%E5%A0%B4"><span class="octicon octicon-link"></span></a>データアクセス方法を標準化するODataの登場</h3>
+
+<p>ODataは、企業向けWebアプリケーションをターゲットに様々なデータアクセス方法を標準化しています。今後の企業向けWebアプリケーションの構築にて、様々なデータアクセスに対する柔軟に対応でき、現時点で非常に可能性を感じる仕様です。</p>
+
+<p>では、実際に今までのクライアントMVCを利用した場合と比較して、ODataを利用した場合、どの辺りにメリットを感じるか話します。</p>
+
+<p>まず、今までのクライアントMVCを利用した場合のアプリケーション構築イメージです。
+<img src="docs/img/2-1.png" alt="ODataを利用しない場合"></p>
+
+<p>ODataを使わない場合、フロントエンドを構築する一部にクライアントMVCが導入され、クライアントMVCを中心に統合されている状態でした。しかし、バックエンドとのWebAPIの設計、実装についてはそれぞれの案件ごとに対応している状況で、バックエンドも含めた形の統合とはほど遠い姿でした。</p>
+
+<p>ではODataを利用した場合はどうでしょうか？
+<img src="docs/img/2-2.png" alt="ODataを利用する場合"></p>
+
+<p>ODataを利用する場合、バックエンドがカスタムのWebAPIからOdataServiceと呼ばれるものに置き換わり、フロントエンドとバックエンドのデータアクセスについて標準化とライブラリによる隠蔽が可能です。<br>
+（ちなみに、JavascriptにてODataを利用する場合、デファクトなJavascriptライブラリは<a href="http://datajs.codeplex.com/">datajs</a>です。）<br>
+しかし、ODataに対するURLパラメータの設定や、ODataから受け取ったデータのUIへのレンダリングは実装する必要があり、ODataのメリットより仕様の複雑さの方が目立つ状況でした。
+このような状況のためか、ODataに対する世間の注目度はいまいちだったような気がします。</p>
+
+<h3>
+<a name="ui%E3%83%97%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%A8odata%E3%81%AE%E7%B5%B1%E5%90%88" class="anchor" href="#ui%E3%83%97%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%A8odata%E3%81%AE%E7%B5%B1%E5%90%88"><span class="octicon octicon-link"></span></a>UIプレームワークとODataの統合</h3>
+
+<p>そこで登場したものがODataをサポートするUIフレームの登場です。<br>
+ここでのUIフレームワークとは、従来のクライアントMVCの機能を持ち、UIコンポーネントも持つものです。<br>
+特徴としては、WebAPIから取得したデータを元に自動でUIを構築し、UI側の操作をダイレクトにバックエンドに連携できる機能を持っています。<br>
+ODataをサポートする代表的なUIフレームワークとしてOpenUI5があります。</p>
+
+<p>OpenUI5とODataを組み合わせた場合は次のようになります。
+<img src="docs/img/2-3.png" alt="ODataとOpenUi5利用する場合"></p>
+
+<p>ODataとOpenUI5を組み合わせることで、バックエンドのデータアクセス部分からUIの変更まで隠蔽することが可能となりました。<br>
+アプリケーション開発者は面倒なバックエンドとの同期について頭を悩ませる事なく、ビジネスロジックの構築に専念できます。</p>
+
+<p>このようにバックエンドとフロントエンドを統合した形は、企業向けWebアプリケーション構築のソリューションとして可能性を感じます。<br>
+OpenUI5というパートナーを得たことで、ODataの仕様は本当の意味で「使える」ものになりました。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="3-odata%E3%81%AE%E5%9F%BA%E6%9C%AC" class="anchor" href="#3-odata%E3%81%AE%E5%9F%BA%E6%9C%AC"><span class="octicon octicon-link"></span></a><a name="basic">3. ODataの基本</a>
+</h1>
+
+<p>ODataはHTTPをベースに構成されているため、1つのバックエンドとのやり取りを見る限る通常のHTTPとなんら変わりはありません。<br>
+バックエンドへの問い合わせは通常の<code>GET</code>、<code>POST</code>、<code>PUT</code>、<code>DELETE</code>で行い、返されるデータも<code>xml</code>、 <code>json</code>、<code>atom</code>形式です。</p>
+
+<p>しかし、ODataはバックエンドとの間の複数のHTTP問い合わせを統合して標準化しています。そしてODataを返すバックエンドがODataServiceと呼ばれるものです。<br>
+ODataServiceは、内部に「インターフェース層」「実体化層」「抽象化層」の3つで構成されています。フロントエンドがODataServiceにアクセスする際は、ODataのデータモデルを提供する「Metadata」か、実際のデータAPIインターフェース「EntityConteiner」のどちらかを呼び出します。</p>
+
+<p>こちらが、ODataServiceについての概念図です。<br><img src="docs/img/3-1.png" alt="ODataService概念図">
+（上の内容については、筆者の独自の解釈が含まれています。誤りがある可能性があります。）</p>
+
+<p>ODataを理解する上では、特にデータモデルの構造を理解する事が重要です。まずMetadataを見ながらのODataのデータモデルについて基本的なことを理解しましょう。</p>
+
+<p>今回のチュートリアルで利用するNorthwindのMetadataをベースに進めていきます。Metadataはこちらで確認できます。  </p>
+
+<p><a href="http://services.odata.org/V2/Northwind/Northwind.svc/%24metadata">http://services.odata.org/V2/Northwind/Northwind.svc/$metadata</a></p>
+
+<h2>
+<a name="entitytype%E3%81%A8entities" class="anchor" href="#entitytype%E3%81%A8entities"><span class="octicon octicon-link"></span></a>EntityTypeとEntities</h2>
+
+<h3>
+<a name="entitytype" class="anchor" href="#entitytype"><span class="octicon octicon-link"></span></a>EntityType</h3>
+
+<p>EntityTypeはODataを構成する最も小さなデータ構造体です。Northwindの<code>Category</code>と<code>Product</code>のEntityTypeを見てみます。</p>
+
+<p><em>Category</em></p>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;EntityType</span> <span class="na">Name=</span><span class="s">"Category"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Key&gt;</span>
+        <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"CategoryID"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Key&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">xmlns:p8=</span><span class="s">"http://schemas.microsoft.com/ado/2009/02/edm/annotation"</span> <span class="na">Name=</span><span class="s">"CategoryID"</span> <span class="na">Type=</span><span class="s">"Edm.Int32"</span> <span class="na">Nullable=</span><span class="s">"false"</span> <span class="na">p8:StoreGeneratedPattern=</span><span class="s">"Identity"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"CategoryName"</span> <span class="na">Type=</span><span class="s">"Edm.String"</span> <span class="na">Nullable=</span><span class="s">"false"</span> <span class="na">MaxLength=</span><span class="s">"15"</span> <span class="na">Unicode=</span><span class="s">"true"</span> <span class="na">FixedLength=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"Description"</span> <span class="na">Type=</span><span class="s">"Edm.String"</span> <span class="na">Nullable=</span><span class="s">"true"</span> <span class="na">MaxLength=</span><span class="s">"Max"</span> <span class="na">Unicode=</span><span class="s">"true"</span> <span class="na">FixedLength=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"Picture"</span> <span class="na">Type=</span><span class="s">"Edm.Binary"</span> <span class="na">Nullable=</span><span class="s">"true"</span> <span class="na">MaxLength=</span><span class="s">"Max"</span> <span class="na">FixedLength=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;NavigationProperty</span> <span class="na">Name=</span><span class="s">"Products"</span> <span class="na">Relationship=</span><span class="s">"NorthwindModel.FK_Products_Categories"</span> <span class="na">FromRole=</span><span class="s">"Categories"</span> <span class="na">ToRole=</span><span class="s">"Products"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/EntityType&gt;</span>
+</pre></div>
+
+<p><em>Product</em></p>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;EntityType</span> <span class="na">Name=</span><span class="s">"Product"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Key&gt;</span>
+        <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"ProductID"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Key&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">xmlns:p8=</span><span class="s">"http://schemas.microsoft.com/ado/2009/02/edm/annotation"</span> <span class="na">Name=</span><span class="s">"ProductID"</span> <span class="na">Type=</span><span class="s">"Edm.Int32"</span> <span class="na">Nullable=</span><span class="s">"false"</span> <span class="na">p8:StoreGeneratedPattern=</span><span class="s">"Identity"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"ProductName"</span> <span class="na">Type=</span><span class="s">"Edm.String"</span> <span class="na">Nullable=</span><span class="s">"false"</span> <span class="na">MaxLength=</span><span class="s">"40"</span> <span class="na">Unicode=</span><span class="s">"true"</span> <span class="na">FixedLength=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"SupplierID"</span> <span class="na">Type=</span><span class="s">"Edm.Int32"</span> <span class="na">Nullable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"CategoryID"</span> <span class="na">Type=</span><span class="s">"Edm.Int32"</span> <span class="na">Nullable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"QuantityPerUnit"</span> <span class="na">Type=</span><span class="s">"Edm.String"</span> <span class="na">Nullable=</span><span class="s">"true"</span> <span class="na">MaxLength=</span><span class="s">"20"</span> <span class="na">Unicode=</span><span class="s">"true"</span> <span class="na">FixedLength=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"UnitPrice"</span> <span class="na">Type=</span><span class="s">"Edm.Decimal"</span> <span class="na">Nullable=</span><span class="s">"true"</span> <span class="na">Precision=</span><span class="s">"19"</span> <span class="na">Scale=</span><span class="s">"4"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"UnitsInStock"</span> <span class="na">Type=</span><span class="s">"Edm.Int16"</span> <span class="na">Nullable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"UnitsOnOrder"</span> <span class="na">Type=</span><span class="s">"Edm.Int16"</span> <span class="na">Nullable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"ReorderLevel"</span> <span class="na">Type=</span><span class="s">"Edm.Int16"</span> <span class="na">Nullable=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"Discontinued"</span> <span class="na">Type=</span><span class="s">"Edm.Boolean"</span> <span class="na">Nullable=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;NavigationProperty</span> <span class="na">Name=</span><span class="s">"Category"</span> <span class="na">Relationship=</span><span class="s">"NorthwindModel.FK_Products_Categories"</span> <span class="na">FromRole=</span><span class="s">"Products"</span> <span class="na">ToRole=</span><span class="s">"Categories"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;NavigationProperty</span> <span class="na">Name=</span><span class="s">"Order_Details"</span> <span class="na">Relationship=</span><span class="s">"NorthwindModel.FK_Order_Details_Products"</span> <span class="na">FromRole=</span><span class="s">"Products"</span> <span class="na">ToRole=</span><span class="s">"Order_Details"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;NavigationProperty</span> <span class="na">Name=</span><span class="s">"Supplier"</span> <span class="na">Relationship=</span><span class="s">"NorthwindModel.FK_Products_Suppliers"</span> <span class="na">FromRole=</span><span class="s">"Products"</span> <span class="na">ToRole=</span><span class="s">"Suppliers"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/EntityType&gt;</span>
+</pre></div>
+
+<p><code>EntityType</code>の中に<code>key</code>と<code>Property</code>が存在するような、良く見るデータ構造体です。<br><code>NavigationProperty</code>はこのEntityTypeが他のEntityTypeと関連がある場合の情報で、RDBMSの外部キーのようなものです。後述する<code>Association</code>とセットで利用されます。</p>
+
+<h3>
+<a name="entities" class="anchor" href="#entities"><span class="octicon octicon-link"></span></a>Entities</h3>
+
+<p>EntitiesはEntityTypeのデータ構造体を実際のデータにしたものです。 
+Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインスタンスに該当します。そのため、Entitiesはリストになるケースが多いです。
+以下が、<code>Product</code>のEntitiesの抜粋です。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products?%24format=json">http://services.odata.org/V2/Northwind/Northwind.svc/Products?$format=json</a></p>
+
+<div class="highlight highlight-javascript"><pre><span class="p">{</span>
+    <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+                <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+                    <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+                <span class="p">},</span>
+                <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+                <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+                <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+                <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+                <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+                        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Category"</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+                        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+                        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Supplier"</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+
+        <span class="p">...</span>
+
+</pre></div>
+
+<p>注目は、問い合わせURLが<code>Product</code>ではなく<code>Products</code>となっているところです。こちらは、後述する<code>EntitySet</code>にて取り上げます。</p>
+
+<h2>
+<a name="association" class="anchor" href="#association"><span class="octicon octicon-link"></span></a>Association</h2>
+
+<h3>
+<a name="association-1" class="anchor" href="#association-1"><span class="octicon octicon-link"></span></a>Association</h3>
+
+<p>2つ以上のEntiryTypeの関連を定義したものです。RDBMSのスキーマ定義における外部キーに相当します。先ほどの2つのEntityType<code>Category</code>と<code>Entity</code>には関連がありますので、それを見てみましょう。</p>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;Association</span> <span class="na">Name=</span><span class="s">"FK_Products_Categories"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Categories"</span> <span class="na">Type=</span><span class="s">"NorthwindModel.Category"</span> <span class="na">Multiplicity=</span><span class="s">"0..1"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Products"</span> <span class="na">Type=</span><span class="s">"NorthwindModel.Product"</span> <span class="na">Multiplicity=</span><span class="s">"*"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;ReferentialConstraint&gt;</span>
+        <span class="nt">&lt;Principal</span> <span class="na">Role=</span><span class="s">"Categories"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"CategoryID"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/Principal&gt;</span>
+        <span class="nt">&lt;Dependent</span> <span class="na">Role=</span><span class="s">"Products"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"CategoryID"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/Dependent&gt;</span>
+    <span class="nt">&lt;/ReferentialConstraint&gt;</span>
+<span class="nt">&lt;/Association&gt;</span>
+</pre></div>
+
+<p>2つの関連するEntityTypeとそれぞれのKeyが定義されています。<code>Multiplicity</code>にて関連の多重度が定義されています。いままでRDBMSに携わっていた方であれば、容易に理解できると思います。</p>
+
+<h2>
+<a name="entityconteiner%E3%81%A8associationsetentityset" class="anchor" href="#entityconteiner%E3%81%A8associationsetentityset"><span class="octicon octicon-link"></span></a>EntityConteinerとAssociationSet、EntitySet</h2>
+
+<h3>
+<a name="entityconteiner" class="anchor" href="#entityconteiner"><span class="octicon octicon-link"></span></a>EntityConteiner</h3>
+
+<p>ODataServiceが外部に公開するI/Fを納めたコンテナ定義です。<br>
+上で挙げた<code>EntityType</code>や<code>Association</code>はODataService内部の定義であって、外部の利用者はEntityConteinerにて公開されているI/Fを利用します。</p>
+
+<h3>
+<a name="entityset" class="anchor" href="#entityset"><span class="octicon octicon-link"></span></a>EntitySet</h3>
+
+<p>EntityTypeの外部公開I/F名。<code>Product</code>の場合、EntitySetの名前が<code>Products</code>となっているため、外部からアクセスする場合は<code>Products</code>を利用します。慣例でEntityTypeの複数系で、Entitiesを表すことが多いようです。</p>
+
+<p>以下にEntityConteinerとEntitySetを抜粋します。</p>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;Schema</span> <span class="na">xmlns:d=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices"</span> <span class="na">xmlns:m=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"</span> <span class="na">xmlns=</span><span class="s">"http://schemas.microsoft.com/ado/2008/09/edm"</span> <span class="na">Namespace=</span><span class="s">"ODataWeb.Northwind.Model"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;EntityContainer</span> <span class="na">xmlns:p7=</span><span class="s">"http://schemas.microsoft.com/ado/2009/02/edm/annotation"</span> <span class="na">Name=</span><span class="s">"NorthwindEntities"</span> <span class="na">p7:LazyLoadingEnabled=</span><span class="s">"true"</span> <span class="na">m:IsDefaultEntityContainer=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Categories"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Category"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"CustomerDemographics"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.CustomerDemographic"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Customers"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Customer"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Employees"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Employee"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Order_Details"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Order_Detail"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Orders"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Order"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Products"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Product"</span><span class="nt">/&gt;</span>
+
+        ...
+
+    <span class="nt">&lt;/EntityContainer&gt;</span>
+<span class="nt">&lt;/Schema&gt;</span>
+</pre></div>
+
+<h3>
+<a name="associationset" class="anchor" href="#associationset"><span class="octicon octicon-link"></span></a>AssociationSet</h3>
+
+<p>EntitySetと同じくAssociationの外部公開I/F名。以下が<code>FK_Products_Categories</code>のAssociationSet定義です。AssociationSetもEntityConteiner内部に格納されています。</p>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;AssociationSet</span> <span class="na">Name=</span><span class="s">"FK_Products_Categories"</span> <span class="na">Association=</span><span class="s">"NorthwindModel.FK_Products_Categories"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Categories"</span> <span class="na">EntitySet=</span><span class="s">"Categories"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Products"</span> <span class="na">EntitySet=</span><span class="s">"Products"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/AssociationSet&gt;</span>
+</pre></div>
+
+<p>ODataを利用した実際の開発では、このようにODataServiceが提供するMetadataを参照しながら行っていきます。<br>
+これまでのWeb開発での、RDBMSのスキーマ定義を参照しながら開発することと何ら変わりない事が理解できると思います。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="4-odataservice%E3%82%92url%E3%81%A7%E6%93%8D%E4%BD%9C%E3%81%99%E3%82%8B" class="anchor" href="#4-odataservice%E3%82%92url%E3%81%A7%E6%93%8D%E4%BD%9C%E3%81%99%E3%82%8B"><span class="octicon octicon-link"></span></a><a name="manipulating">4. ODataServiceをURLで操作する</a>
+</h1>
+
+<p>早速、ODataServiceを操作してみましょう。先述した通り、ODataはデータAPIであるため、ブラウザのアドレスバーにURLを入力することによってアクセスすることが出来ます。 
+URLのクエリパラメータをいくつか追加していくことでODataServiceの振る舞いを柔軟に変える事が出来ます。実際に検索、ページングなどデータの取得シーンを想定し、ODataが利用するメリットを十分体験してみてください。  </p>
+
+<p>ODataServiceはNorthwindを利用します。Metadataを確認する場合はこちらを参照してください。
+<a href="http://services.odata.org/V2/Northwind/Northwind.svc/%24metadata">http://services.odata.org/V2/Northwind/Northwind.svc/$metadata</a></p>
+
+<blockquote>
+<p>ブラウザではなくデータAPIのテスト専用に作られたRESTクライアントツールを利用することを推奨します。こちらのChrome extentionsの<a href="https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm">POATMAN</a>は、非常に操作しやすくRESTクライアントとして一番のおすすめです。<br>
+ブラウザのみでデータアクセスする際は、こちらのChrome extentionsの<a href="https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc">JSONVIew</a>だけでもインストールしておくといいでしょう。</p>
+</blockquote>
+
+<h2>
+<a name="odataservice" class="anchor" href="#odataservice"><span class="octicon octicon-link"></span></a>OdataService</h2>
+
+<h3>
+<a name="entityconteinerendpoint" class="anchor" href="#entityconteinerendpoint"><span class="octicon octicon-link"></span></a>EntityConteiner(endpoint)</h3>
+
+<p>では、ODataServiceが提供するEntityConteinerの情報を取得します。このURLが以降のデータアクセスのルートとなるため、以降endpointと呼びます。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/">http://services.odata.org/V2/Northwind/Northwind.svc/</a></p>
+
+<p>結果は以下の通りです。<br>
+（レスポンスで取得した結果のデータが非常に大きいため、中身を割愛しながら説明していきます。ご了承ください。）</p>
+
+<div class="highlight highlight-xml"><pre><span class="cp">&lt;?xml version="1.0" encoding="utf-8" standalone="yes"?&gt;</span>
+<span class="nt">&lt;service</span> <span class="na">xml:base=</span><span class="s">"http://services.odata.org/V2/Northwind/Northwind.svc/"</span> 
+    <span class="na">xmlns:atom=</span><span class="s">"http://www.w3.org/2005/Atom"</span> 
+    <span class="na">xmlns:app=</span><span class="s">"http://www.w3.org/2007/app"</span> 
+    <span class="na">xmlns=</span><span class="s">"http://www.w3.org/2007/app"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;workspace&gt;</span>
+        <span class="nt">&lt;atom:title&gt;</span>Default<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Categories"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Categories<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"CustomerDemographics"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>CustomerDemographics<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Customers"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Customers<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Employees"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Employees<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Order_Details"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Order_Details<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Orders"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Orders<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Products"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Products<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+        <span class="nt">&lt;collection</span> <span class="na">href=</span><span class="s">"Regions"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;atom:title&gt;</span>Regions<span class="nt">&lt;/atom:title&gt;</span>
+        <span class="nt">&lt;/collection&gt;</span>
+
+        ...
+
+    <span class="nt">&lt;/workspace&gt;</span>
+<span class="nt">&lt;/service&gt;</span>
+</pre></div>
+
+<p>これがNorthwindのODataServiceが提供するデータアクセスAPIのインターフェース定義です。<br>
+より詳細な内容は次の<code>Metadata</code>を取得して確認します。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h3>
+<a name="metadata" class="anchor" href="#metadata"><span class="octicon octicon-link"></span></a>Metadata</h3>
+
+<p>Metadataを取得するためにはendpointのURLの後ろに<code>$metadata</code>を付与します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/%24metadata">http://services.odata.org/V2/Northwind/Northwind.svc/$metadata</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-xml"><pre><span class="cp">&lt;?xml version="1.0" encoding="utf-8" standalone="yes"?&gt;</span>
+<span class="nt">&lt;edmx:Edmx</span> <span class="na">Version=</span><span class="s">"1.0"</span> 
+    <span class="na">xmlns:edmx=</span><span class="s">"http://schemas.microsoft.com/ado/2007/06/edmx"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;edmx:DataServices</span> 
+        <span class="na">xmlns:m=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"</span> <span class="na">m:DataServiceVersion=</span><span class="s">"1.0"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Schema</span> <span class="na">Namespace=</span><span class="s">"NorthwindModel"</span> 
+            <span class="na">xmlns:d=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices"</span> 
+            <span class="na">xmlns:m=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"</span> 
+            <span class="na">xmlns=</span><span class="s">"http://schemas.microsoft.com/ado/2008/09/edm"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;EntityType</span> <span class="na">Name=</span><span class="s">"Category"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;Key&gt;</span>
+          <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"CategoryID"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/Key&gt;</span>
+        <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"CategoryID"</span> <span class="na">Type=</span><span class="s">"Edm.Int32"</span> <span class="na">Nullable=</span><span class="s">"false"</span> <span class="na">p8:StoreGeneratedPattern=</span><span class="s">"Identity"</span> 
+                    <span class="na">xmlns:p8=</span><span class="s">"http://schemas.microsoft.com/ado/2009/02/edm/annotation"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"CategoryName"</span> <span class="na">Type=</span><span class="s">"Edm.String"</span> <span class="na">Nullable=</span><span class="s">"false"</span> <span class="na">MaxLength=</span><span class="s">"15"</span> <span class="na">Unicode=</span><span class="s">"true"</span> <span class="na">FixedLength=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"Description"</span> <span class="na">Type=</span><span class="s">"Edm.String"</span> <span class="na">Nullable=</span><span class="s">"true"</span> <span class="na">MaxLength=</span><span class="s">"Max"</span> <span class="na">Unicode=</span><span class="s">"true"</span> <span class="na">FixedLength=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;Property</span> <span class="na">Name=</span><span class="s">"Picture"</span> <span class="na">Type=</span><span class="s">"Edm.Binary"</span> <span class="na">Nullable=</span><span class="s">"true"</span> <span class="na">MaxLength=</span><span class="s">"Max"</span> <span class="na">FixedLength=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;NavigationProperty</span> <span class="na">Name=</span><span class="s">"Products"</span> <span class="na">Relationship=</span><span class="s">"NorthwindModel.FK_Products_Categories"</span> <span class="na">FromRole=</span><span class="s">"Categories"</span> <span class="na">ToRole=</span><span class="s">"Products"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/EntityType&gt;</span>
+
+      ...
+
+      <span class="nt">&lt;Association</span> <span class="na">Name=</span><span class="s">"FK_Products_Categories"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Categories"</span> <span class="na">Type=</span><span class="s">"NorthwindModel.Category"</span> <span class="na">Multiplicity=</span><span class="s">"0..1"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Products"</span> <span class="na">Type=</span><span class="s">"NorthwindModel.Product"</span> <span class="na">Multiplicity=</span><span class="s">"*"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;ReferentialConstraint&gt;</span>
+          <span class="nt">&lt;Principal</span> <span class="na">Role=</span><span class="s">"Categories"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"CategoryID"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;/Principal&gt;</span>
+          <span class="nt">&lt;Dependent</span> <span class="na">Role=</span><span class="s">"Products"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;PropertyRef</span> <span class="na">Name=</span><span class="s">"CategoryID"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;/Dependent&gt;</span>
+        <span class="nt">&lt;/ReferentialConstraint&gt;</span>
+      <span class="nt">&lt;/Association&gt;</span>
+
+      ...
+
+    <span class="nt">&lt;/Schema&gt;</span>
+    <span class="nt">&lt;Schema</span> <span class="na">Namespace=</span><span class="s">"ODataWeb.Northwind.Model"</span> 
+                                        <span class="na">xmlns:d=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices"</span> 
+                                        <span class="na">xmlns:m=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"</span> 
+                                        <span class="na">xmlns=</span><span class="s">"http://schemas.microsoft.com/ado/2008/09/edm"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;EntityContainer</span> <span class="na">Name=</span><span class="s">"NorthwindEntities"</span> <span class="na">p7:LazyLoadingEnabled=</span><span class="s">"true"</span> <span class="na">m:IsDefaultEntityContainer=</span><span class="s">"true"</span> 
+                                            <span class="na">xmlns:p7=</span><span class="s">"http://schemas.microsoft.com/ado/2009/02/edm/annotation"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Categories"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Category"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"CustomerDemographics"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.CustomerDemographic"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Customers"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Customer"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Employees"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Employee"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;EntitySet</span> <span class="na">Name=</span><span class="s">"Order_Details"</span> <span class="na">EntityType=</span><span class="s">"NorthwindModel.Order_Detail"</span> <span class="nt">/&gt;</span>
+
+        ...
+
+        <span class="nt">&lt;AssociationSet</span> <span class="na">Name=</span><span class="s">"FK_Products_Categories"</span> <span class="na">Association=</span><span class="s">"NorthwindModel.FK_Products_Categories"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Categories"</span> <span class="na">EntitySet=</span><span class="s">"Categories"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Products"</span> <span class="na">EntitySet=</span><span class="s">"Products"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/AssociationSet&gt;</span>
+
+        ...
+
+      <span class="nt">&lt;/EntityContainer&gt;</span>
+    <span class="nt">&lt;/Schema&gt;</span>
+  <span class="nt">&lt;/edmx:DataServices&gt;</span>
+<span class="nt">&lt;/edmx:Edmx&gt;</span>
+</pre></div>
+
+<p>MetadataはXMLで返されます。<br>
+OdataServiceは複数のEntityを統合して公開できる能力を持っているため、複数のEntityを利用する場合は、EntityごとにODataServiceを作成してクライアントマッシュアップで統合するよりは、単一のODataServiceの中に含めてしまう方が経験的に良いと考えています。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h2>
+<a name="entities%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9" class="anchor" href="#entities%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9"><span class="octicon octicon-link"></span></a>Entitiesアクセス</h2>
+
+<h3>
+<a name="entities-1" class="anchor" href="#entities-1"><span class="octicon octicon-link"></span></a>Entities</h3>
+
+<p>では、ProductsのEntitiesを取得してみましょう。 
+EntitiesにアクセスするためにはendpointのURLの後ろに<code>EntitySet名</code>を付与します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products">http://services.odata.org/V2/Northwind/Northwind.svc/Products</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-xml"><pre><span class="cp">&lt;?xml version="1.0" encoding="utf-8" standalone="yes"?&gt;</span>
+<span class="nt">&lt;feed</span> <span class="na">xml:base=</span><span class="s">"http://services.odata.org/V2/Northwind/Northwind.svc/"</span> 
+    <span class="na">xmlns:d=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices"</span> 
+    <span class="na">xmlns:m=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"</span> 
+    <span class="na">xmlns=</span><span class="s">"http://www.w3.org/2005/Atom"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title</span> <span class="na">type=</span><span class="s">"text"</span><span class="nt">&gt;</span>Products<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;id&gt;</span>
+    http://services.odata.org/V2/Northwind/Northwind.svc/Products
+  <span class="nt">&lt;/id&gt;</span>
+  <span class="nt">&lt;updated&gt;</span>2014-07-20T14:26:33Z<span class="nt">&lt;/updated&gt;</span>
+  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"self"</span> <span class="na">title=</span><span class="s">"Products"</span> <span class="na">href=</span><span class="s">"Products"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;entry&gt;</span>
+    <span class="nt">&lt;id&gt;</span>
+      http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)
+    <span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;title</span> <span class="na">type=</span><span class="s">"text"</span><span class="nt">&gt;&lt;/title&gt;</span>
+    <span class="nt">&lt;updated&gt;</span>2014-07-20T14:26:33Z<span class="nt">&lt;/updated&gt;</span>
+    <span class="nt">&lt;author&gt;</span>
+      <span class="nt">&lt;name</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/author&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"edit"</span> <span class="na">title=</span><span class="s">"Product"</span> <span class="na">href=</span><span class="s">"Products(1)"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/related/Category"</span> <span class="na">type=</span><span class="s">"application/atom+xml;type=entry"</span> <span class="na">title=</span><span class="s">"Category"</span> <span class="na">href=</span><span class="s">"Products(1)/Category"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/related/Order_Details"</span> <span class="na">type=</span><span class="s">"application/atom+xml;type=feed"</span> <span class="na">title=</span><span class="s">"Order_Details"</span> <span class="na">href=</span><span class="s">"Products(1)/Order_Details"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/related/Supplier"</span> <span class="na">type=</span><span class="s">"application/atom+xml;type=entry"</span> <span class="na">title=</span><span class="s">"Supplier"</span> <span class="na">href=</span><span class="s">"Products(1)/Supplier"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;category</span> <span class="na">term=</span><span class="s">"NorthwindModel.Product"</span> <span class="na">scheme=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;content</span> <span class="na">type=</span><span class="s">"application/xml"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;m:properties&gt;</span>
+        <span class="nt">&lt;d:ProductID</span> <span class="na">m:type=</span><span class="s">"Edm.Int32"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/d:ProductID&gt;</span>
+        <span class="nt">&lt;d:ProductName</span> <span class="na">m:type=</span><span class="s">"Edm.String"</span><span class="nt">&gt;</span>Chai<span class="nt">&lt;/d:ProductName&gt;</span>
+        <span class="nt">&lt;d:SupplierID</span> <span class="na">m:type=</span><span class="s">"Edm.Int32"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/d:SupplierID&gt;</span>
+        <span class="nt">&lt;d:CategoryID</span> <span class="na">m:type=</span><span class="s">"Edm.Int32"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/d:CategoryID&gt;</span>
+        <span class="nt">&lt;d:QuantityPerUnit</span> <span class="na">m:type=</span><span class="s">"Edm.String"</span><span class="nt">&gt;</span>10 boxes x 20 bags<span class="nt">&lt;/d:QuantityPerUnit&gt;</span>
+        <span class="nt">&lt;d:UnitPrice</span> <span class="na">m:type=</span><span class="s">"Edm.Decimal"</span><span class="nt">&gt;</span>18.0000<span class="nt">&lt;/d:UnitPrice&gt;</span>
+        <span class="nt">&lt;d:UnitsInStock</span> <span class="na">m:type=</span><span class="s">"Edm.Int16"</span><span class="nt">&gt;</span>39<span class="nt">&lt;/d:UnitsInStock&gt;</span>
+        <span class="nt">&lt;d:UnitsOnOrder</span> <span class="na">m:type=</span><span class="s">"Edm.Int16"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/d:UnitsOnOrder&gt;</span>
+        <span class="nt">&lt;d:ReorderLevel</span> <span class="na">m:type=</span><span class="s">"Edm.Int16"</span><span class="nt">&gt;</span>10<span class="nt">&lt;/d:ReorderLevel&gt;</span>
+        <span class="nt">&lt;d:Discontinued</span> <span class="na">m:type=</span><span class="s">"Edm.Boolean"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/d:Discontinued&gt;</span>
+      <span class="nt">&lt;/m:properties&gt;</span>
+    <span class="nt">&lt;/content&gt;</span>
+  <span class="nt">&lt;/entry&gt;</span>
+
+  ...
+
+<span class="nt">&lt;/feed&gt;</span>
+</pre></div>
+
+<h3>
+<a name="format" class="anchor" href="#format"><span class="octicon octicon-link"></span></a>$format</h3>
+
+<p>先ほどのデータはXML形式でしたので、JSONで取得してみましょう。URLパラメータに<code>$format=json</code>を渡します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products?%24format=json">http://services.odata.org/V2/Northwind/Northwind.svc/Products?$format=json</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Category"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Supplier"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p><code>$format</code>パラメータを渡すことでレスポンスのデータ形式を指定できます。以降のURLアクセスはJSONで行います。</p>
+
+<h3>
+<a name="select" class="anchor" href="#select"><span class="octicon octicon-link"></span></a>$select</h3>
+
+<p>次に取得データ項目の取捨選択の方法です。<br>
+プルダウンを作るためにデータ取得する想定だとします。先ほどのデータでは必要ない項目まで取得されてしまうため、必要な項目だけにしぼってデータを取得しましょう。今回はProductIDとProductNameが欲しいとします。URLパラメータに<code>$select=ProductID,ProductName</code>を渡します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products?%24format=json&amp;%24select=ProductID,ProductName">http://services.odata.org/V2/Northwind/Northwind.svc/Products?$format=json&amp;$select=ProductID,ProductName</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span>
+      <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span>
+      <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Aniseed Syrup"</span>
+      <span class="p">},</span>
+
+       <span class="p">...</span>
+
+</pre></div>
+
+<p><code>$select</code>に複数のデータ項目を渡したい場合は<code>,（カンマ）</code>で区切って渡してください。後述するNavigationを絡めた複雑なパターンにも対応できます。</p>
+
+<h3>
+<a name="count" class="anchor" href="#count"><span class="octicon octicon-link"></span></a>$count</h3>
+
+<p>問い合わせるデータの件数を取得したい場合はURLに<code>$count</code>を付与します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products/%24count">http://services.odata.org/V2/Northwind/Northwind.svc/Products/$count</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="mi">77</span>
+</pre></div>
+
+<h3>
+<a name="top" class="anchor" href="#top"><span class="octicon octicon-link"></span></a>$top</h3>
+
+<p>ここからはページングを想定したデータアクセスを想定して話を進めていきます。<br>
+3件ごとにページ遷移すると仮定して最初の5件を取得します。URLパラメータに<code>$top=3</code>を渡します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products?%24format=json&amp;%24top=3">http://services.odata.org/V2/Northwind/Northwind.svc/Products?$format=json&amp;$top=3</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">[{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"24 - 12 oz bottles"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"19.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Aniseed Syrup"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"12 - 550 ml bottles"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"10.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">70</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>ProductIDが<code>1~3</code>の3件取得していることが分かります。</p>
+
+<h3>
+<a name="skip" class="anchor" href="#skip"><span class="octicon octicon-link"></span></a>$skip</h3>
+
+<p>では次の3件を取得します。URLパラメータに<code>$top=3&amp;$skip=3</code>を渡します。
+$skipを指定することで最初の5件をスキップします。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products?%24format=json&amp;%24top=3&amp;%24skip=3">http://services.odata.org/V2/Northwind/Northwind.svc/Products?$format=json&amp;$top=3&amp;$skip=3</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">[{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(4)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chef Anton's Cajun Seasoning"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"48 - 6 oz jars"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"22.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">53</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(4)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(4)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(4)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(5)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chef Anton's Gumbo Mix"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"36 boxes"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"21.3500"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(5)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(5)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(5)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(6)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Grandma's Boysenberry Spread"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"12 - 8 oz jars"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"25.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">120</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(6)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(6)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(6)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}]</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>今度はProductIDが<code>4~6</code>の3件取得していることが分かります。</p>
+
+<h3>
+<a name="orderby" class="anchor" href="#orderby"><span class="octicon octicon-link"></span></a>$orderby</h3>
+
+<p>次は、orderby指定をしてみます。<code>ProductID</code>の降順を指定します。URLパラメータに<code>$orderby=ProductID desc</code>を渡します。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(77)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">77</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Original Frankfurter grüne Soße"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"12 boxes"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"13.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(77)/Category"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(77)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(77)/Supplier"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(76)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">76</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Lakkalikööri"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">23</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"500 ml"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">57</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(76)/Category"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(76)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(76)/Supplier"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p><code>$orderby</code>のパラメータには<code>プロパティ名 順序</code>を指定します、順序を指定しない場合は<code>asc</code>指定となります。<br>
+複数指定する場合は<code>,(カンマ)</code>で区切って指定してください。<br>
+試しにSupplierID, CategoryIDの昇順でデータを取得しましょう。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Category"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Supplier"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"24 - 12 oz bottles"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"19.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Category"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Supplier"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<h3>
+<a name="filter" class="anchor" href="#filter"><span class="octicon octicon-link"></span></a>$filter</h3>
+
+<p>次は、検索処理を想定したデータ取得です。Entitiesに対して何らかのfilter処理を加える場合、URLパラメータに<code>$filter</code>を渡します。<code>$filter</code>のパラメータは<code>プロパティ名 演算子 条件値</code>を設定します。<br>
+試しにSupplierIDが1のデータを取得してみましょう。</p>
+
+<p></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+      <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+      <span class="p">},</span>
+      <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+      <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+      <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+      <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+      <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Category"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Supplier"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+      <span class="p">},</span>
+      <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span><span class="p">,</span>
+      <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"24 - 12 oz bottles"</span><span class="p">,</span>
+      <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"19.0000"</span><span class="p">,</span>
+      <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+      <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+      <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+      <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Category"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Order_Details"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Supplier"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+      <span class="p">},</span>
+      <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+      <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Aniseed Syrup"</span><span class="p">,</span>
+      <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"12 - 550 ml bottles"</span><span class="p">,</span>
+      <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"10.0000"</span><span class="p">,</span>
+      <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">13</span><span class="p">,</span>
+      <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">70</span><span class="p">,</span>
+      <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+      <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)/Category"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)/Order_Details"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(3)/Supplier"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>SupplierIDが1に該当するデータが取得できていることが分かります。次は、SupplierIDが1でUnitsInStockが20以上のデータを取得してみましょう。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+      <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+      <span class="p">},</span>
+      <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+      <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+      <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+      <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+      <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Category"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Supplier"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>このように$filterを利用することで検索処理に対して柔軟に対応できることがわかりました。<br>
+$filterには他にも多くの演算子が存在しています。詳細は<a href="http://www.odata.org/documentation/odata-version-2-0/uri-conventions/#FilterSystemQueryOption">こちら</a>で確認できます。</p>
+
+<h3>
+<a name="expand" class="anchor" href="#expand"><span class="octicon octicon-link"></span></a>$expand</h3>
+
+<p>最後に、Navigationを使った関連するEntityTypeに関するデータアクセスの方法を学びます。<br>
+例を挙げると、EntitySet<code>Product</code>には<code>CategoryID</code>が含まれていますが、実際に表示したい値は<code>CategoryName</code>で、これは<code>Category</code>上にあるといったシーンです。企業向けWebアプリケーションにおいては比較的よくあるシーンです。</p>
+
+<p>ODataにはNavigationを使って関連するEntityTypeのデータを取得する方法が仕様化されているため、URLパラメータから柔軟に指定することが可能です。<br>
+試しに<code>Category</code>と<code>Supplier</code>のデータを<code>Product</code>と一緒に取得してみましょう。URLパラメータに<code>$expand</code>を渡します。<code>$expand</code>のパラメータは<code>NavigationPropertyのname属性</code>を設定します。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Category"</span>
+          <span class="p">},</span>
+          <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="s2">"CategoryName"</span><span class="o">:</span> <span class="s2">"Beverages"</span><span class="p">,</span>
+          <span class="s2">"Description"</span><span class="o">:</span> <span class="s2">"Soft drinks, coffees, teas, beers, and ales"</span><span class="p">,</span>
+          <span class="s2">"Picture"</span><span class="o">:</span> <span class="s2">"FRwvAAIAAAANAA4AFAAhAP////9CaXRtYXAgSW1hZ2UAUGFpbnQuUGljdHVyZQABBQAAAgAAAAcAAABQQnJ1c2gAAAAAAAAAAACgKQAAQk2YKQAAAAAAAFYAAAAoAAAArAAAAHgAAAABAAQAAAAAAAAAAACICwAAiAsAAAgAAAAIAAAA////AAD//wD/AP8AAAD/AP//AAAA/wAA/wAAAAAAAAAAABAAAAAAEAAAAAEAEAAAAAAAAAEBAQABAAAQAQAAAAEBAAEAAAAQAQAAAQAAABAQEAAQAAAQABAAAAAAAAAAAAAAEAAAAAEAAAAAAAAAEAAAAAAAAAAAAAAAEAEAEAAAAAAAAAAAAAEAEAEAABJQcHAQAAAAEAAAAAEAAQAQAAABAAAAEAAAAAAQAQAQAAAAEAEBAQEBAAAAAAAAAAAAAAEAEAAQAAAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAQECBSU2N3d3d3d3d1NTAQAQEAAQAAAAAAEBAAEAEAAQAQAQAAAAAAAQAAAAAAAAAAAQABAAEAEBAAEAAAABABAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEBQ0NXd3d3d3d3d3d3d3d3d3AQASAAEBAQAQIAAAAAAAAAAAAAAAAQAQABABAAAAAAAQABAAAAAAAAAAABABAAAAEAEAEBAQAAAAAAAAAAAAAAAAAAAAECFhd3d3d3V1dTU1NSV3d3d3d3d3AVASAAAQABAQEAAAAAAAAAAAEAAAAAAAAAEAEAEAAAAAABABAAABABABAAAQEAEAEAAAAQAAAAEAAAAAAAAAAAAAAAFBd3dzdhc3Y3d3V2d3Fwd1J3d3d3Y0AWEhAwAAAAABAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAQAAAAAAABAAAQAAAAAAAAAAAAAAAAAQBQNndXdXFwUBQAAAAQEHBxd3V3d3d3UzQQFAABAQEBAAEBABAQEAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAEBAAEAAAEAAAAAAAAAAAAAAAABA1c1MAAAAAAAAAAAAAAAAAAXF3d3d3dHBhIQEAAAAAEAAAEAAAABAAAAAAAAAAAAAAAAAAAAAQABBwMBAQEhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEDQ1AAAAABBlNDV3dXBHdHRwAAAQd1d3cXEAAAAQEAEAAQEAAQEBAAAQAAAAAAAAAAAAEEFHcRATEDV1ACAEBHcwEAAQAAAAAAAAAAAAAAAAAAAAAAAAAAABAAQBQXZXdwcAAGd3d3d3ZWBAQAc3FzQ2FwFAAAEkEAAAEAAAAAEAACBAAAAgAAAQF0d2d3cAAQEHN3dXd3d3U3IQAAAAAQAAAAAAAAAQAQAAAAABAAABAAADdnZHZwAAQABXdHBBZxdHdCFAUABDQUA0MABWUSBRAQAwEBQAIQcXE3BwFDd3d3d3V3d3cRIQMXd3d3d3dwV1d3EBAAAAAQAAAAAAAAABAAAQAAAQEABHBEBEBnEAdHd3Z3d3dhQGBgB0JSQAF3d3d0dkZ3Z1IGAlAAMCFxZzd3d3d3d3d3R0dydXR3cAEBZ3d3d3d2cXMxdwMAAQEBAAAAABAAAAAAEAAAAAAABCBGAgAHdCdHd2d3d3d3Vnd3d0ZHRlZgZ2d3dmV0Z3Z1cVElNQcWZzd3dzN0Z3dXd3d3dXJ3Z3EQBRd3d3d2d3YBVxMUEDACAAEAAAAAEAEAAAAAABAQAGdEAEQEd2FHd2d3ZwZ2d3dnR2VnNHBldQV2c3VmR0Z1d3cnElIWdxdzN3Fzd3Z3dndWdHZXdXcSEQN3V3d3d3ZxcCd1MSEBAQEAABAAAAAAAQAAEBAAABB2cGAAR3Z0d3Z3Z3d1Z3Z3d3d3cEJHdnYGd3dGdHR0dnZ3dWUlZTExF3EXc3ZHd3dXZ1d3d0dxARBwF3d3d2d3dAFxc0AAAAAAAQAAEAAAAAAAEAAAAQEAR3ZUBmYFB3dndld3dndHB3R3d3Z0dmRgd3c3Z0dHZ3d3dndxcXNzU3dxdzd0d3d3d3d3R3R3ABEnEHd3d2d3d2MXFzUhASEBAQAAAAAAAAAAAAABAAAAAwBAZ2d1dnZ3UHcAZ2dHd3R3R3d3R0d3BHZ3dlZwZ0Z3dld3d3d3d3d3d3dzdmd3dHZXR3R3d3EAEDF3d3d3Z2d0E3F3EAAAAAABAAAAAAAAAAAAAAAQEAVwdEJWdlYXYAZ2cAR3BHZwdwB2d3AABHd0dzRlZEZ0VndnZ3d3d3d3d3d3c3Vmd3d3d3d3d3d3MQABB3d3d3d3d3F1NSEBAQEBAAAAAAAQABAAAAABAAd3dxIVJQMARnAHd3R2dCcEckd3ZXdWRwAHZzd0dnBHQnd3d3d3d3d3c2d3d3d2V3d3d3d3dDR3d1B1d3U3d2dnZ3AXJ3MQAAAAAAEAAAAAAAAAEAAQEAcXBwFhQgQEYAd0YEBnYWdHB3QWd0NlZ3d0AHd3YGdAdGVndnd3d3d3d1dxd3dzdHZ3VxYWEkNBAwMHd3d3dXd3UhAAABE1AAEAEAEAAAAQEAAQAAAQAAIQAXFSVnUHAHQ0BnAAUAQHZwBwZXB1d3d2d3AHd0R0ZGZWd3dnd3d3d3d3d3d3N3Z3dhAAAAATd3U1Axd3d3N3dzd1BwEAAQECEAEAAQAAAAAAABAQABABAwAGd3d2FlBgQGUEdgR2B0ZAR3ZAZwVlZ3Z3AHd2R1BHR0dnd3d3d3d3d3d3NzN0d3d3MBFzV3d3d3d3d3d1d3d3d3d2dBIEEAEAEAAAEAAAEAAAABAAEABXd0QUAABgdAZwZ2dnZ3Z3d3ZHd1Z2d3dEdwB3QHZkZ2R3dWd3d3d3d3dzc3Nzd2Rnd0d1NSd3d3Z3d3d3d3Y2VzU1NRMBAwASAwEBAAAAAAAAAAAAEAAQcAAhAAYUd2dnRkYEBAQEAGZmd2dnd3VHZ3cEZkRkQERFZ3Z2d3d3d3dzNzc3N3Z3d3Z3QkR3c3dxdxJ3cWU1dXdTQkIEABABABAAABAAEAAAAQABAAAQAwAFAAAUZmQAAAAQEDBzQ1IQEQAGVnd2cHd3AEdgR3Q3dnZ3d2d3d3d3c3NzczN1ZHdlcHU3cQB3B3AXd3ZSUnFnMAEBIQEhAwEAEDAAAAAQAQAAAAEAAAUAAGAEYWAAQAASU0NRARAQEAAAAAAAd0AAAEd0RzNzc3d1dnd3d3d3c3Nzc3dzdlZ1d3d3c3MQFnZ3B3dxd3VnF3MAEBAwAAACECEBAAAAAAAAAQAAAAAQAHdAAABBQCFBQAAAAAAAAAAAAAAAAAAwAAB3d3d3Nzc3dndnd3d3d3c3NzczNzVndnd3c3dxAXd3dxd3RwUnF2c0AwAAABAQEAAQAAAQAAAQAQAAAAEBQAVmAAAABzdWBgAAAAAAAAAAAAAAAAAARzB3d3NzM3Nzd3d0dnd3d3dzczc1N2FmZ3d3dzdzcBd3FncHc1N3dXRzUxABIQEAAAABABAQAAAQAAAAABAAQwAGVAAAAABAAUElQUBAQAAAAAAAAAAAADdzd3Z3N3c3NzN3dnd3d3d3dndkZ0ZWV1Z0d3d3N3MBcBdxB2VlQ1JzV3ABcBAwMDEBABAAAAAQAAEAEBADBwQABmAAAAAAAAAEAAAAAAAAAAAAAAAAAAd3dRRnM3M3Nzd3d3dHZ3d3d3dHRkR2RmZ3Z3d3d3JxEDEHYRcwc3Q1dHc3MBA0EFAEMDABIQAQABAQAQABJQAAAEcAAAAAAEZ0IAAAAAAAAAAAAAAAAHd3Znd3c3c3c3NzNzd2d3d3d3d2dkVnZQdXR3dldhAFcSEQFzFhFXR3djdzUQUnASUhMBAFAhAQAAEHAhAwFlAAAABkAAAAAAZ3ZAZ3ZGQAAEBkFDQXd3d2dmdhRzczczc3N3d3d2dnd3d3ZWR2dHRmRmdHd2F3UnERIRYQEAIzEhEQEFJyEBYSAUAWEDQQYBAXMHVhd3AABXAEdAAEdABEYAAABGd3BQR3d2cXNXN1Z2d3Z2dzdzd3Nzc3d3Z3d3d3d3ZWR0Z2VHdXZ3cXZwB3RlZHRzEBABEAAAElAWUhRxYXASEBIBEHB3cXN3dAAGN3AEAAB2BGdgAAAAB0B2BgB3cGd3d3dnZ2dnZ2czczM3Nzc3d0dnd3d3d3Z2d0dCRnZ0dncVdwFndndnYTEzEhMTEwE3ExcxAxIWFSUFMHMHd3d3dwAEdXdwAAAAYAZ2AABkBAAAZHQEZ0B3d3d3dnZ2dnZzdzd3c3N3d3d2d3d3d3dnR0Z2dGdHd3d0NnAXUwUyU1JScTUzU1MXAUNBQ3FhcTATEhF3cXd3d3cAFzd3AAZ2BHZncEcGRGZAAEdkAHd0d3d3d2dnZ2dnN3M3MzNzc3N3Z0Z3d3d2VGdnRwR0dnR2U3VhBzF3NXN1JTRzdBcBcDUwMTAQEBADAAFCd3d3dzd3AEd3d3AEdGBwRkQGRAAARkAGcAR2cHd3d3d2dnZ2dnM3c3d3Nzd3d3Z3d3d3d2ZWVmVnB2d2d3UHcAdWMVM0c3BzEBMhNhcDQ0NDQwcDFBcSEXd3N3d3d0AldzdwACdEcAAGQAAAAABkAGQAZ2B3d3d3Z2d2d2d3M3MzM3Nzd3dHZ3d3d3d0Z2VnRGR0d2d2NHcCcXJ1NxcXV3d1d1c1cXFxcXFxdDNhYWN3d3dzVzdABzd3NABGBmAEYAAAAAAAQABgBnZ0d3d3d3Z2Z2Z2c3c3d3c3Nzd3d0dnd3d3Z1ZWdGd0Z2V3cRcQBTcVM1N3N3d3d3d3d3d3d3d3dzd1dzdXN3d3N3N3IEd3c1AABHQERgBEAAAAAAAEAEd3QAd3dwBmdndndjMzMzMzNzd3d2Z2d3d3d3dmdHZWRldHZ2BgAAc1M3U3MXd3d3d3d3d3d3d3d3d3dzd3c3dzN1N3d0AAcXd3AABmQCRkBkAAAAAAAARkZwBHd3cAd2dmdmZ3d3d3d3Nzd3d3d3d3d3Z3dEZGdWVnZ3dTU3NSUxcTcXcXd3d3d3d3d3d3d3d3d3d3U3d3N1N3FzdwAHZzc1AAAABHRmRmVkZkRABABGQAAHdwAGdndnd3MzMzMzM3Nzd3ZnZ3d3d3d2d3d2Z2d2Vnd3FxMXUhcDcXN3d3d3d3d3d3d3d3d3U3U3cXN1N3c3d3NwAFd3cAQAdHdmd2R2Z2dmdGdgAAAAR3AAB2dmdmZnd3d3d3czd3d3Vnd3d3F3d3JgQABAQGd2EXFhMTFTU1Nxd3d3d3d3d3d3dzd1N3d3d3d1N3NxdzU3RwAABQBnBEZnd3d3Z3d3Z3d3ZWEARmEAAAZ2d2d3czMTEQEQB3d3dmZWd3dWdwQEBQUUB3dxZTY1MUcXMTU3F3d3d3d3d3d3dXdXd3d3d3d3d3c1N1N3c3FwAAAAF3YEBAQEBARgYHZ2d3YXAABHAAAHEQEQAQAAAAAAARAVcXd3Z3d3ZHASQQAAJTAAR3cREwExMBdTU3F3d3d3d3F3Fzc3d3N3c3d1N3Nxc1MlIWU3YWRGQmVwBAAAAAAAAAQEAEAHZ3QABEAAB3dQB1AAAAAAAAAAABc0d2Z3d0ZWQQAAAABAAwBlJRNTB1MwMXBzd3d3V3d3d3d3dzd3d3d3N3d1N1cDU1MTQxcTcxNTMAAEZEAAAARAAAAAAFN3AAAAAAAHc0MQAAAAAAAAAAAAQTV3d3VnYXYABwAAAAQEQhMFIVMRU1M3E1d3c3dzdzd3V3d3dXN1d3d3c1MhNQMWFhcWNSFlclcAAAZwAGAEJAAAAAUnNxAAAAAAAAdXcAAAAAAAAAAABTERd3dmVEdAUkQAAAAEADFQExMDByE1NTdzd3V3dXd1Nzdxdzd3d3d3d3cDU0M0MTEwMQMXExczcTAQAABWcAAgAAADF1YAAAAAAAAAAHd3EBIQAQEQETERcTM3VGZ0dGVwcEcAAHFQIWEBFTFTQ1NRd1N3Nzc1N3dzd3d3d3dzdTdxNQM1MXBxcXNWE0MQUwcDBSU3AEcBQWFxdDNwAAAAAAAAAAAAAQEBF3AAAAZAJzc3N2dFZGd3d3d3MGV3NRATc0NTExcHNzd3N3V3d3N3dXc3VzVzdXd3c0M3U3c3NnMHExY1JzFxcXMTcAAAdzc1JxNXQAAAAAAAAAAAAAAABGQAAAAEZzNzc3NEZkd3d3d3d0AAc3NzcRAxA0NTcXF3NWU3NTdXcXc3Vzd3d3d3d3M1NzdxcXU1dyd1NxcWNzc1d3AAAHFzU3FndwAAAAAAAAAAAAAAAABGAAQARnYXNzc3R0V3d3d3d3cARjFxMRIDEhMTExczcXdzd3d3c3d3d3d3d3d3d3d3U3dzd3c3c3Fxc1N3NXF0dzc3dhd3Fnd3NXAAAAAAAAAAAAAAAABABAAAAABAYzczNGRnN3d3d3d3QAdzM3MxEAEBMTUxcXdzd3U3c3d3d3d3d3d3d3d3dzd3dXN3c3d3dzZ3F3N3NxZxdTU0M3NSV3NwAAAAAAAAAAAAAAAAAAAAAAAAADczc3RDM3N3d3d3dwAAd0ABAxMTMXMTczc1d1N3d3d3d3d3d3d3d3d3d3dzdzd3U3Vzc3Nxc2cXFlNzVyc2c3R1NzcXQAAAAAAAAAAAAARgAAAAAAAAAAA3NzNkN3M3N3d3d3dAQHMAAAAAABITczFzc3d3d3d3d3d3d3d3d3d3d3d3dXd3Nzd3N1dXVzUxcnM1NTF1dTVzc3dXYwAAAAAAAAAAAABCRAAAAAQAAEAAc3M3VzMzczM3d3d3AABwAAAAAAAAAAAHBHd3d3d3d3d3d3d3d3d3d3d3dzd3N1d1N1c3Nzd3d3U1cnNnM3N3NTVzc1cAAAAAAAAAAAAARAYAAAAABAQAQDczczN3Nzdzc3d3dwBAAAAAAAAAQAZAQEN3d3d3N1d3d3d3d3d3d3d3d3d3N3Nzd3N3d3dxc3Fzc1cXF1JXNHNyF3c0AAAAAAAAAAAAAAZEZAAAAAAAQAQzczczM3Mzczczd3cQAARwU0AQABZQN3d0dxdxd1d3d3d3d3d3d3d3d3d3N1d1d3NXcXNXd3V3dXc3d3N3c3N1d3cXdwAAAAAABmAABkAEdnQAAAAAQAAANzczc3M3czc3Nzd3QEAHd2AAQAAAAEQARzd3d3d3d3d3d3d3d3d3d3d3d3N3N3NXc3d3c3c3c3c3dTcXdTV1c3NTdxAAAAAAAAQEAARkBgRgAAAAAABAAHNzNzczczNzc3N3dwAAAEdHdCAAAAAABDV3d3d3d3d3d3d3d3d3d3d3d3d1d3d3d3d3d3d3d3d3d3d3dzdzc3dXd3cAAAAAAARgAABGAGRgAAAAQAAAAAA3M3Mzczc3Nzc3N3dgAAAAAABVAENhd3d3d3d3d3d3d3d3d3d3d3d3d3d3N3d3d3N3d3d3d3d3d3d3d3d3d3dzdzd3cAAAAAAAAAAAAABAZAAAAAQEAAAAM3M3Nzczc3Nzc3N3AEAAAAAAJ3c1d3d3d3d3d3d3d3d3d3d3d3d3d3V3d3d3d3N3dXNxd3V3d3dXc3d3d3d3d3d1c0BAAAAAAAAAAEAAQGQAAAAAAAAAAHM3M3MzczM3Nzc3d1AAAAAAAFd3d3d3d3d3d3d3d3d3d3cXd3VzdXdzd3d3dzV3d3N3d3N3N3U3c3dzVzVzU3VzdzcAAAAAAAAAAERgBAYGAAAAAAAAAEYzczczc3N3c3NzN3cAdGAAAAA3d3d3d3d3d3d3d3d3d3d3dzdzd3c3d3c3d3dzc3F3U1N1N1N3d3d3d3d3d3dzdxd1AAAAAAAAAAAAAABERARABAAAAAAGNzNzczczMzc3M3d3QGdAAAAAB3d3d3d3d3d3d3d3c3V3N3d1d3cXcXc3dzV3d3d3c3d3d3d3d3d3d3d3d3d3d3d3dwQAAAAAAAAAAAAAYABmYGYAAAAARDNzMzczc3czM3d3dwBnYAQARAd3d3d3d3d3d3d3d3d3d1c1c3U3d3d3V3dzd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3IBAAAAAAAAAAAAAEAARAREAAAAAAA3Nzczczczc3d3d3dwRgBnRmAHd3d3d3d3d3d3d3d3dzd3d3d3d3N3N3N3d3d3d3d3c3c3d3dzd3d1N3d3d3d3d3d1AEAAAAAAAAAAAAAABGBGAAAAAABGNzNzNzNzNzd3d3d3AEdGQGcAB3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3FzcXd3d1c3c3d1N3d3d3dzd1d3NzcAAAAAAAAAAAAABkRkAABGAAAAAAAHM3NzNzNzN3d3d3N1BmB2BAABd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3N3N3c1cXN3U3dzVzd3c3d1d3ckAAAAAAAAAAAABgZAAAAAAAAAAAA3M3N3NzN3d3d3dzdgR0ZABAYFd3d3d3d3d3d3d3d3d3d3d3d3d3d3V3V3FzNzU3d1cXcXVzd1NzdTd3d1d3d3d3d1AQAAAAAAAAAAAEZUAAAAAAAAAAAAczczMzN3d3d3d3F3EGYGdnR2dnd3d3d3d3d3d3d3d3d3d3c3d3d3c3dzd3d3VzdXNzdzY3Nxc3V3N3c3Nzc3d3c3EgBAAAAAAAAAAAAEYAAAAAAAAAAAAHNzc3N3d3d3d3dzdwBlZHZGRhd3d3d3d3d3d3d3d3d3V1d3d3dXV1dzV3NzU3Fzc1dzdXU1djVzNXc3dXd3d3N3d3UAAEAAAAAAAABEBkYAAEAAAAAAAABzNzM3d3d3d3d3cTcQZgZHZAAHd3d3d3d3d3V3d1c1d3d3d1dXc3c3V3d3Vzd3dXdzVzc3c3FzV3N1cHNzcXV3d3c3AAAAAAAAAAAEZ2RlZUZAAAAAAAAAdzNzd3dTd3d3d3d3RHRAdGcAUHd3d3d3d3V3d1c3dzVzdxdzc3d3dzd3c3F3Nzc3N3NXdTU3NDcHNzd1dXdzc1N3dwBQAAAAAAAARnZHQmZkAAAAAAAAAEczN3cHR0d3d3d3d3ZWdkJ2YCd3d1dTd3V3c3FzV3d3dXd3d3dXd3d3U3d3d3dXdXd3dzd3dXdzd1d1c3Nzd3d3V3cAAABAAAAAAGdAdgQEAAAAAAAAAAAHd3cQNxYXN3d3dzdnZmVkZHBXd1c3d3V3c3V3d3cXc3d3d3d3c1c1d3d3Nzd3d3c3FzVzd3NzV1Nzc3d3d3NXc3c3AAQAAAAAAABmZCRgQEAAAAAAAAAAB3d3cAdndHd3d3d2dnZ2dHQANXd3d3d3N3d3d3d3d3d3N3NXN3c3d3N3d3dXd3N3d3d3d3F3V3N3d1c1N1NXc1d3d3ABAAAAAAAEBAZAQAAkQAAAAAAAAAB3c3AUFHdWd3d3d2JHZ2dmAGd3d3d3N3d3dzd3N3d1N3d3d3d3d3d3d3d3d3N3d3d3c3U2c3c3U1c2d2d2dzdnNHcUAkAAAAAAAABEZAAARmAAAEAAAAAAdzdSAHd3J1d3d3AEAEdmd2cXd3d1d3d3d3d3dXdzd3d1d3dxd1Nxdxd3d3d1d1NTU1d3d3V3V3d3dTV1NzV1cXc1cAUAQAAAAAAAAAAEBABHZEBGQAAAAAd3NAFhZXV3d3cAZEAAR2QlZ3c3c3V3U3VzVzd3d3dzdzdzd3N3d3d3d3N3d3d3d3d3F3F3d3d3d3d3N3V3c3dXd3MAAAAEAAAAAABAAAAAAAAGdAAAAAAHd3FCV3c2d3dwBAAGAAZ2U3d3c3d3c3dzd3d3dzVzV3d3d3d3d3d3d3d1d3d3d3d3d3d3d3d3d3d3d3d3c3c3c1N3AHAEAAAAAAAABAAABAQAAEAAAAAAAHd3BSV2V3d3cAQAQEBEAGV3N3Vxc3d3d3c3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3Nzc3F3U3d3N3VldSd3dQAAQAAAAAAAAAAABEJCRAAGQAAAAAB3dyQHdXZ3dwBABgAAcAA3N1c3N3V3U3U3Vzd3d3d3d3d3d3d3d3d3d3d3d3dzd3c3c3NXdXV3d3dXNXU3NzN3FzcwBwAAQAAAAAAAAARkZEAABnJEAAAAB3dQdWdld3UABEQEBkQEd3c3d3d3N3d3d3d1d3d3d3d3d3d3d3d3d3d3d1c3d3F3c3V3Nzc3Nzc3N3M3d1NXU3dXdAAAQAAAAAAAAAAABAAAAEBEBkAAAAR3dAd1d3dwBAQkYERgQ3V3d1dzd3d3d3d3d3d3d3N3d3d3d3d3d3d3d3c3d3V3NXVzcXVxcXVxdXF1clM3JzQ3J3MAcAAEAAAAAAAAAAAAAARgBGQAAAAAd3JSVnd3cARwQGQkASQ3N3c3dXd3d3d3d3d3N3N3d3dXNXd3d3d3d1c3dzc3N3c3N3dzc2c2Nyc3NzU1YXFzcXcXUABAAABAAAAAAAAAAARgAABAAAAAAEdxBHd3dwBnYAZWRkBXd3d3d3d3d3d3dzd3N3d3dXcXd3d3d3d3d3c3dzV3V3U3d1cXNxdTU1cXQ1JTdzc3NxdxdzAHAEAAAAAAAAAAAAAEAEYAAAAAAAAHd3dxE1cEdgBEZQAHJ3d3d3dzd3d3c3d3d3dXNXN3d3d3d3d3d3d3dzd3c3c3cXc3d1d3N3c3dzd3c0NXQ1Z3NzdxAGAEBABAAAAAAAAAAABAAAAAAAAAB3FXFxU1Z3BEYAJHB1d3V3N3d3c3d1dzVzV3N3d3d3d3d3d3d3d3dzV3c3d3d3d3d3dzdXNXcXdTU1d3N3c3F0dSdxAWAAAAAEAAAAAAAAAAYAAAAAAAAAd3E1N3d2dgAFZEAEJzU3N3U3c3V3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d1c3d3N3c3dzd3dzV3dTdXc3NxdwAQQAQAAAAAAAAAAABEAAAAAAAAAHcXE1d3dnQAYGQhQ1dXd3Vzd1d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3d3d3d3d3d3d3d3d3d3d3dzd3c3N3dzdXd3cwBCQABAAAAAAAAAAAAAAAAAAAAAB3cXR3d1Z2VAQFFCU3NzVzd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3d3dXd3d3d3d3d3c3V3dzd3c1N3cQAQBAAEBAAAAAAAAAAAAAAAAAAAdxcTdXd2R2dAQGF3d3d3d3dzdzd3d3d3d3d3c3d3d3dzdTd3d3d3d3d3dXd3d3d3N3N3dzd3U3cXdXdzc1N1Nzd3BzcQBABAAAAAAAAAAAAAAAAAAAAAAHdxcXd3dGd2ADAGU3dXd3d3d3d3d3d3d3c3d3d3d3d3d3d3d3d3d3d3c3NzU3F3d3V3cXd1N3d3dzdxd1d3U3V1NXNTYQAFAEBAQEAAAAAAAAAAAAAAAAB3FxcXdyB2cAAENzdzdzdzd1dzd3N3N3d3d3d3d3d3d3d3d3d3d3d3dXd3d3d3dzd3N3d3d3d3d3d3d3N3Nzdzc3c1d1MAAAQgAAAAQEAAAAAAAAAAAAAEd3NTd3dQQAQQQ3V3dXN1d3c3F3d3d3d3N3d3d3d3d3d3d3d3d3d3c3N3d3d3d3d3d3d3d3d3d3d3d3d3d1d3d3c3c3N3cgBQQEBAQAAABAAAAAAAAAAAAHcVNXd3AAABYHU3U3N3dzcXd3dxdxd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3U3NXcXdXNTUwAQAEAQQAQAAEBAAEAEAAQAAXc1NXd3AHAAcnc3d3dTd3d1N1d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d1d3d3d3N3dXd3d3U3dTdydXY3dxclJzQSAFAEBABAQEAAAEAAAABAAAdzU1N3cAUAZTU1d3dzd3F3N3c3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3Vzd3c3d3dxc3d3d3d3N3d3d3d1N1NzV1J3F3UXNQAAcAAEAAAAQAQABABAAABHdxcXd3UAQ1N3dzc3d3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3Nzd1c3cXNxd3d3NXdzd3d3N3d3N3N3d3N3F3MTY0NwAABWEEBAUAQABABAAEBAB3Uxd3dwA2d3FzdXdTd1d3d3d3d3d3d3d3d3c3d3d3d3d3d3d3d3d3V1dxd3d3d3dzcXdXc3d3d3V3d3N3c1Nxd3N3F3ZTU1NxYAAEcABAQAQABQAFABAAFzVxd3d2Fxd3dXN3d3d3d3d3d3d3d3d3d1c3V3d3d3d3d3d3d3d3Nzdzd3N1N3cXdXdzd3dTdTdzd3d1d3d3d3F1c3JTdzcnFxcQAAUlIAQAQEBgQAQEAHdTFxd3cXd3d3d3d3dzd3d3d3V3d3d3d3d3d3d3d3d3d3d3d3d3d1dxd1N1d3U3dzdzd3N3d3d3d3d3d3cXcXN3dzd1N3B3U2N3QyAABBZSQQAABABAAAR3Nxd3d3d3dzd3d3d3d3d3c3c3d3d3d3d3d3d3d3d3d3d3d3d3d3dzd3N3d3N3d3d3dXd1c3c3d3d3c3c3d3d1Nzd1N3F3U3V1c3dXdgAAAQYUFBAUNAUAd1dTd3d3d3d3c3dzd3d3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d1N3dzd3d3d3d3dzd3d3d3d3d3d3d3c3d3dXN3d3c3c3N3U3NzU3MAAAAABAABAAAHc3dxd3dzd3d1d1dXF3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3dzd3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3dzd3V3d3c3d3V3d3d3cWFhIWFjd3d3cQF3d3d3F3F3N3d3d3d3d3d3d3d3d3d3d3d3d3d3cXdXc3dXd1d3d3d3d3d3d3d3d3d3d3d3dzd3d3d3d3dzdzd3V3Nzdxdxd3FzdzdTd3d3d3d3d3d3VxcXd3d3F3d3d3c3d3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3c3d3c3d3d3d3c3dXcXdTd3d3c3N1dzdzdzU3dzVzdzc3dzd3V3N3c3dxcXd3d3dzd3d3d3d3d3d3c3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c1dTdTd3dXd3N3V1NXNXdXdTc3dzd1N1c1d1c1dXF1N3cXFzVzV3U1dTdzdXF3d3FxdXd3d3d3c3V3c3VzU3c3d3U3d3d3d3d3d3d3d3d3d3d3d3d3d3d3dzd3d3F3N1N1c3c3d3dzd3d3d3d3N3c3dzdzdzc3c3U3d3dzdXNTdzd1N3N3d3d3cXd3d3d3V3Vzd1dzd3d3d1c3d3d3d3d3d3d3d3d3d3d3d3d3d3c1d3d3d3d3d3d3d3d3d3d3d3N3d3d3d3d3d3d3d3d3d3d3dTdxd3N3d3d3d3dXd3dxdxFzd3cXNzc3d3c3d3d3cXc3d3d3d3d3d3d3d3d3d3d3d3d3d3d3dzc3d3d3d3d3d3d3d3d3N3d3d3dzd3V3d3d3d1d3d3U3Nzd3d3N3c3c3dTdzd3d3dxAQFBd3d1d1c3d3d3FzU3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3d3d3c3c3d3d3d3d3V3V3V3Vzd3dxdxc3FzU3dXVzU3N1cXU2Vzd3d3Nzd3d3d3Nhc3c3N3Vzd3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3c3d1cXdXNzd3dXd3NXU3NXNzdzd3d3N3Nzd3d3d3d3dzc3N3cXUzdjcXNXNTd3dXdxd3d1N3V3d3U3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3Nzd3N3dXNXN1N3dzd3d3d3d3N3N3dXdXdzc1Nxc1NXcXUhdDd1NXc3c3d3Fzc3N3N3c3U3c3U3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d1cVNHF3Nzc3N3N3Fzd3Fzc3d3d3d3d3N3dzdXd3d3d3c3dzdzNxc3NxcXdzd3d3dXd3c3U3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3Nzd3N3F1dXdXNXc3dxd3dXVxc3d3d3d3c3d3Nxc1Nxc1cXVxdXdxd1N3cXV3N3NTd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d1NHNTU3c3Nxc1NxcXFzU3Nzd3d3d3d3d3dzd3d3d3d3dzdzdzc1NzU3Fzdzd3c3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3N3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3NTUAAAAAAAAAAAAAAQUAAAAAAADHrQX+"</span><span class="p">,</span>
+          <span class="s2">"Products"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+              <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)/Products"</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Suppliers(1)"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Supplier"</span>
+          <span class="p">},</span>
+          <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="s2">"CompanyName"</span><span class="o">:</span> <span class="s2">"Exotic Liquids"</span><span class="p">,</span>
+          <span class="s2">"ContactName"</span><span class="o">:</span> <span class="s2">"Charlotte Cooper"</span><span class="p">,</span>
+          <span class="s2">"ContactTitle"</span><span class="o">:</span> <span class="s2">"Purchasing Manager"</span><span class="p">,</span>
+          <span class="s2">"Address"</span><span class="o">:</span> <span class="s2">"49 Gilbert St."</span><span class="p">,</span>
+          <span class="s2">"City"</span><span class="o">:</span> <span class="s2">"London"</span><span class="p">,</span>
+          <span class="s2">"Region"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+          <span class="s2">"PostalCode"</span><span class="o">:</span> <span class="s2">"EC1 4SD"</span><span class="p">,</span>
+          <span class="s2">"Country"</span><span class="o">:</span> <span class="s2">"UK"</span><span class="p">,</span>
+          <span class="s2">"Phone"</span><span class="o">:</span> <span class="s2">"(171) 555-2222"</span><span class="p">,</span>
+          <span class="s2">"Fax"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+          <span class="s2">"HomePage"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+          <span class="s2">"Products"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+              <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Suppliers(1)/Products"</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p><code>Category</code>と<code>Supplier</code>のデータも同時に取得できたことがわかります。   しかし、すべてのEntityTypeの値を取得しているため不要な値が含まれています。特に<code>Category</code>の<code>Picture</code>のデータ量は無視できません。</p>
+
+<p>このようなデータの取捨選択を行うためにはどうすればよいのでしょうか？そう<code>$select</code>を使うべきです。<br><code>$select</code>はEntityTypeに関連するEntityTypeについても有効です。<code>Category</code>と<code>Supplier</code>の双方について名称のみ取得するようにしましょう。URLパラメータに<code>$select=Category/CategoryName, Supplier/CompanyName</code>を追加します。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Category"</span>
+          <span class="p">},</span>
+          <span class="s2">"CategoryName"</span><span class="o">:</span> <span class="s2">"Beverages"</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Suppliers(1)"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Supplier"</span>
+          <span class="p">},</span>
+          <span class="s2">"CompanyName"</span><span class="o">:</span> <span class="s2">"Exotic Liquids"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p>今度は取得データをトリムしすぎてしまったようです。Category/CategoryName, Supplier/CompanyNameのみとなってしましました。元あったProductのEnityTypeを含めるためには<code>*</code>という特殊なエイリアスを<code>$select</code>のパラメータに含める必要があります。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"results"</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)"</span><span class="p">,</span>
+          <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+        <span class="p">},</span>
+        <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chai"</span><span class="p">,</span>
+        <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"10 boxes x 20 bags"</span><span class="p">,</span>
+        <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"18.0000"</span><span class="p">,</span>
+        <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">39</span><span class="p">,</span>
+        <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Category"</span>
+          <span class="p">},</span>
+          <span class="s2">"CategoryName"</span><span class="o">:</span> <span class="s2">"Beverages"</span>
+        <span class="p">},</span>
+        <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(1)/Order_Details"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Suppliers(1)"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Supplier"</span>
+          <span class="p">},</span>
+          <span class="s2">"CompanyName"</span><span class="o">:</span> <span class="s2">"Exotic Liquids"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p>これで望みのデータを取得することができました。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h2>
+<a name="entity%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9" class="anchor" href="#entity%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9"><span class="octicon octicon-link"></span></a>Entityアクセス</h2>
+
+<p>今まではEntitiesのリストに対するデータアクセスでしたが、ここからはEntitiesの中の1つのEntityに対する操作です。</p>
+
+<h3>
+<a name="key" class="anchor" href="#key"><span class="octicon octicon-link"></span></a>key</h3>
+
+<p>ODataServiceが外部に公開するデータアクセス用のインターフェースはEntitySetです。これまでの例でいうと、これにアクセスするとリストが返されます。<br>
+1つのデータにアクセスするために最も効率の良い方法はEntitiesに対してEntityTypeの<code>key</code>を指定してアクセスする方法です。<br>
+（他にも$filterを使ってEntityを取得する方法もありますが、何らかの条件で必ず一意になることを保証しなければなりません。）<br>
+URL上でEntitiesのkeyを表現するためには、Entities名の後ろにkeyを<code>(</code>と<code>)</code>で囲んで指定します。EntityTypeでどのプロパティがkeyとなるかはmetadataにて確認できます。</p>
+
+<blockquote>
+<p>EntityTypeのKeyは複数の項目を設定する複合Keyを作成することができますが、フロントエンドの取り回しを考慮して単一のKeyを設定することが良いと考えます。複合Keyを設定しなければならない場合は、プロパティを追加して一意なKeyを設定できないか検討してください。</p>
+</blockquote>
+
+<p>では、<code>Products</code>のkeyは<code>ProductID</code>となっているので、ProductIDgが2に該当するデータを取得します。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)?%24format=json">http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)?$format=json</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"24 - 12 oz bottles"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"19.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Category"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>では先ほどの$select、$expandを使って、関連EntityTypeの名称も同時に取得してみましょう。<br></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Product"</span>
+    <span class="p">},</span>
+    <span class="s2">"ProductID"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span><span class="p">,</span>
+    <span class="s2">"SupplierID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"QuantityPerUnit"</span><span class="o">:</span> <span class="s2">"24 - 12 oz bottles"</span><span class="p">,</span>
+    <span class="s2">"UnitPrice"</span><span class="o">:</span> <span class="s2">"19.0000"</span><span class="p">,</span>
+    <span class="s2">"UnitsInStock"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s2">"UnitsOnOrder"</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">"ReorderLevel"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">"Discontinued"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"Category"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Category"</span>
+      <span class="p">},</span>
+      <span class="s2">"CategoryName"</span><span class="o">:</span> <span class="s2">"Beverages"</span>
+    <span class="p">},</span>
+    <span class="s2">"Order_Details"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Order_Details"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"Supplier"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Supplier"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>では、Entityの中の1つのプロパティにアクセスしましょう。URLのEntities名の後ろにプロパティ名を指定します。<br><code>ProductName</code>にアクセスしてみます。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/ProductName?%24format=json">http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/ProductName?$format=json</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"ProductName"</span><span class="o">:</span> <span class="s2">"Chang"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>このように、ODataの中ではEntitiesアクセスした際に取得したデータのプロパティを<code>/</code>で連結する事で、ダイレクトにプロパティへアクセスすることが可能です。<br>
+先ほどは$expand指定していた<code>Category</code>もプロパティとしてアクセスすることが可能です。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Category?%24format=json">http://services.odata.org/V2/Northwind/Northwind.svc/Products(2)/Category?$format=json</a></p>
+
+<p>結果は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="s2">"d"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"__metadata"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"NorthwindModel.Category"</span>
+    <span class="p">},</span>
+    <span class="s2">"CategoryID"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"CategoryName"</span><span class="o">:</span> <span class="s2">"Beverages"</span><span class="p">,</span>
+    <span class="s2">"Description"</span><span class="o">:</span> <span class="s2">"Soft drinks, coffees, teas, beers, and ales"</span><span class="p">,</span>
+    <span class="s2">"Picture"</span><span class="o">:</span> <span class="s2">"FRwvAAIAAAANAA4AFAAhA    ..... "</span><span class="p">,</span>
+    <span class="s2">"Products"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"__deferred"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"uri"</span><span class="o">:</span> <span class="s2">"http://services.odata.org/V2/Northwind/Northwind.svc/Categories(1)/Products"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>このように、URLパラメータを介してODataServiceを柔軟に操作することができます。<br>
+これまでの話はバックエンドのODataServiceに関するものでしたが、実際にODataserviceを利用してWebシステムを構築するためには、対となるフロントエンドのライブラリが必要です。<br>
+以降は、標準でODataをサポートしているOpenUI5を利用して、実際にODataServiceを利用したWebシステムを構築していきます。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="5-openui5%E3%81%A8odataservice%E3%81%AE%E7%B5%B1%E5%90%88" class="anchor" href="#5-openui5%E3%81%A8odataservice%E3%81%AE%E7%B5%B1%E5%90%88"><span class="octicon octicon-link"></span></a><a name="openui5withodata">5. OpenUI5とODataServiceの統合</a>
+</h1>
+
+<p>これからOpenUI5を使ったチュートリアルを行うに辺り、プロジェクトの環境面について説明します。</p>
+
+<h1>
+<a name="51-%E5%B0%8E%E5%85%A5%E6%BA%96%E5%82%99" class="anchor" href="#51-%E5%B0%8E%E5%85%A5%E6%BA%96%E5%82%99"><span class="octicon octicon-link"></span></a><a name="install">5.1. 導入・準備</a>
+</h1>
+
+<p>まず、チュートリアルを開始するには、以下のURLからチュートリアル用のGitリポジトリをCloneして、<code>bare</code>ブランチに移動してください。<br>
+実際にチュートリアルを行う際は<code>grunt</code>コマンドを実行します。Gruntの初期設定を行っていない方は、<a href="http://gruntjs.com/getting-started">こちら</a>を参照してください。</p>
+
+<pre lang="git"><code>git clone https://github.com/mitsuruog/Openui5-with-OdataService.git 
+cd Openui5-with-OdataService
+git checkout bare
+npm install
+grunt
+</code></pre>
+
+<p><code>grunt</code>コマンドが正しく実行された場合は、<a href="http://localhost:9000/">http://localhost:9000/</a>のページが自動表示されます。  </p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="52-%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%81%AE%E8%AA%AC%E6%98%8E" class="anchor" href="#52-%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%81%AE%E8%AA%AC%E6%98%8E"><span class="octicon octicon-link"></span></a><a name="project">5.2. プロジェクトの説明</a>
+</h1>
+
+<p>先ほど<code>git clone</code>したプロジェクトのフォルダ構成は以下の通りです。</p>
+
+<div class="highlight highlight-sh"><pre>.
+├── ./Gruntfile.js
+├── ./LICENSE
+├── ./README.md
+├── ./app <span class="c"># -&gt; 実際のアプリケーションではここがWebアクセスRootです。</span>
+│   ├── ./app/Component.js
+│   ├── ./app/docs/img
+│   ├── ./app/index.html <span class="c"># -&gt; このファイルが最初に呼び出されます。</span>
+│   ├── ./app/style
+│   │   └── ./app/style/style.css
+│   └── ./app/view
+│       └── <span class="c"># -&gt; ここにCoffeeScriptをコンパイルしたファイルが格納されます。</span>
+├── ./bower.json
+├── ./coffee <span class="c"># -&gt; ここ以下がチュートリアルで編集するファイルです。</span>
+│   ├── ./coffee/Component.coffee
+│   ├── ./coffee/util
+│   └── ./coffee/view
+│       ├── ./coffee/view/App.controller.coffee
+│       ├── ./coffee/view/App.view.coffee
+│       ├── ./coffee/view/CategoryInfoForm.fragment.coffee
+│       ├── ./coffee/view/Detail.controller.coffee
+│       ├── ./coffee/view/Detail.view.coffee
+│       ├── ./coffee/view/Footer.fragment.coffee
+│       ├── ./coffee/view/Master.controller.coffee
+│       ├── ./coffee/view/Master.view.coffee
+│       ├── ./coffee/view/NotFound.controller.coffee
+│       ├── ./coffee/view/NotFound.view.coffee
+│       ├── ./coffee/view/ProductInfo.fragment.coffee
+│       ├── ./coffee/view/SearchList.fragment.coffee
+│       ├── ./coffee/view/SupplierAddressForm.fragment.coffee
+│       └── ./coffee/view/ViewSettings.fragment.coffee
+├── ./docs
+├── ./node_modules <span class="c"># -&gt; gruntのタスクが格納されます。</span>
+└── ./package.json
+</pre></div>
+
+<h3>
+<a name="coffeescript%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%91%E3%82%A4%E3%83%AB" class="anchor" href="#coffeescript%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%91%E3%82%A4%E3%83%AB"><span class="octicon octicon-link"></span></a>CoffeeScriptのコンパイル</h3>
+
+<p>本チュートリアルではJavascript部分はCoffeeScriptで記述してコンパイルによりJavascriptを生成する方式で行います。<code>grunt</code>コマンドを実行することで、<code>/coffee</code>配下のCoffeeScriptファイルの変更を監視して、変更時に自動でコンパイルするよう設定してあります。<br>
+コンパイル後のJavascriptは<code>/app</code>に出力します。<br>
+コンパイルがうまく行かない場合は、このフォルダのファイルを確認してください。</p>
+
+<h3>
+<a name="%E3%83%AA%E3%83%90%E3%83%BC%E3%82%B9%E3%83%97%E3%83%AD%E3%82%AD%E3%82%B7" class="anchor" href="#%E3%83%AA%E3%83%90%E3%83%BC%E3%82%B9%E3%83%97%E3%83%AD%E3%82%AD%E3%82%B7"><span class="octicon octicon-link"></span></a>リバースプロキシ</h3>
+
+<p><code>localhost</code>で実行しているアプリケーションに対して、Northwindのドメイン<code>services.odata.org</code>のデータを利用することは、同一生成元ポリシー違反になるため、Gruntタスクにてリバースプロキシ設定を行っています。設定はこちらです。</p>
+
+<p><em>Gruntfile.js</em></p>
+
+<div class="highlight highlight-js"><pre><span class="nx">connect</span><span class="o">:</span> <span class="p">{</span>
+  <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+  <span class="p">},</span>
+  <span class="nx">proxies</span><span class="o">:</span> <span class="p">[{</span>
+    <span class="nx">context</span><span class="o">:</span> <span class="s1">'/V2'</span><span class="p">,</span>
+    <span class="nx">host</span><span class="o">:</span> <span class="s2">"services.odata.org"</span><span class="p">,</span>
+    <span class="nx">changeOrigin</span><span class="o">:</span> <span class="kc">true</span>
+  <span class="p">}],</span>
+  <span class="nx">livereload</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+  <span class="p">}</span>
+<span class="p">},</span>
+</pre></div>
+
+<h3>
+<a name="%E5%88%9D%E6%9C%9F%E7%8A%B6%E6%85%8B%E3%81%AE%E7%A2%BA%E8%AA%8D" class="anchor" href="#%E5%88%9D%E6%9C%9F%E7%8A%B6%E6%85%8B%E3%81%AE%E7%A2%BA%E8%AA%8D"><span class="octicon octicon-link"></span></a>初期状態の確認</h3>
+
+<p>以下がチュートリアル開始時点のアプリケーションの状態です。<br>
+アプリケーションのUI部分についてはMockレベルで完成している状態です。OpenUI5の公式ドキュメントなどを参照することで、ここまでは完成させることができると思います。<br>
+経験上、ODataの扱いとODataを画面上にどのように組み込めば、Webアプリケーションとして完成するかが、最もつまづいたポイントです。以降のチュートリアルでは、ODataをOpenUI5にて用途ごとにどのように組み込めば良いかを中心に行います。</p>
+
+<p>まず、<a href="http://localhost:9000/">http://localhost:9000/</a>にアクセスすると商品情報検索画面が表示されます。中の実装はまだですので、検索結果は空です。
+<img src="docs/img/4-1.png" alt="初期状態1"></p>
+
+<p>次に、<a href="http://localhost:9000/#/product/1">http://localhost:9000/#/product/1</a>にアクセスすると商品情報詳細画面が表示されます。当然、中の実装はまだですので、表示内容は空です。
+<img src="docs/img/4-2.png" alt="初期状態2"></p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="53-%E5%95%86%E5%93%81%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E8%A3%85" class="anchor" href="#53-%E5%95%86%E5%93%81%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E5%AE%9F%E8%A3%85"><span class="octicon octicon-link"></span></a><a name="productlist_impl">5.3 商品リストの実装</a>
+</h1>
+
+<h2>
+<a name="odataservice%E3%81%AEendpoint%E5%AE%9A%E7%BE%A9" class="anchor" href="#odataservice%E3%81%AEendpoint%E5%AE%9A%E7%BE%A9"><span class="octicon octicon-link"></span></a>ODataServiceのendpoint定義</h2>
+
+<p>まず、本アプリケーションにて利用するODataServiceのendpointを定義します。endpointの定義はアプリケーションで共用するため、<code>Componemt.coffee</code>の<code>init</code>内に記述します。</p>
+
+<p><em>Componemt.coffee:init()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nv">init: </span><span class="nf">-&gt;</span>
+
+  <span class="p">...</span>
+
+  <span class="c1"># ここにOdataServiceのエンドポイントを設定します</span>
+  <span class="c1"># /V2/Northwind/Northwind.svc/</span>
+  <span class="nv">endpoint = </span><span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">odata</span><span class="p">.</span><span class="nx">ODataModel</span> <span class="s">"/V2/Northwind/Northwind.svc/"</span><span class="p">,</span> <span class="kc">true</span>
+  <span class="nx">@setModel</span> <span class="nx">endpoint</span>
+</pre></div>
+
+<p><code>sap.ui.model.odata.ODataModel</code>を作成し、名前なしのグローバルModelとしてアプリケーション内に保持します。</p>
+
+<h2>
+<a name="53a-%E5%95%86%E5%93%81%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E5%8F%96%E5%BE%97" class="anchor" href="#53a-%E5%95%86%E5%93%81%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E5%8F%96%E5%BE%97"><span class="octicon octicon-link"></span></a><a name="productlist">5.3.a 商品リストの取得</a>
+</h2>
+
+<p>商品リストを取得してTable上に表示させてみましょう。<code>view/SearchList.fragment.coffee</code>を開いてください。<code>view/SearchList.fragment.coffee</code>は商品リストテーブルのUI部分を切り出したUI部品です。商品リストテーブルUI（以下、商品リストテーブル）に関連する変更はこちらに記述していきます。</p>
+
+<p>まず、<code>view/SearchList.fragment.coffee</code>の<code>createContent</code>にて利用するODataServiceのEntitiesを指定します。このUIとODataを関連づける作業を<strong>データバインド</strong>と呼びます。</p>
+
+<p><em>view/SearchList.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+    <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Table</span>
+      <span class="nv">id: </span><span class="nx">oController</span><span class="p">.</span><span class="nx">getView</span><span class="p">().</span><span class="nx">createId</span><span class="p">(</span><span class="s">"productList"</span><span class="p">)</span>
+      <span class="nv">growing: </span><span class="kc">true</span>
+      <span class="nv">growingThreshold: </span><span class="mi">5</span>
+      <span class="nv">growingTriggerText: </span><span class="s">"もっと見る"</span>
+      <span class="nv">noDataText: </span><span class="s">"データがありません。"</span>
+      <span class="nv">headerToolbar: </span><span class="nx">@_createHeaderToolbar</span><span class="p">(</span><span class="nx">oController</span><span class="p">)</span>
+      <span class="nv">columns: </span><span class="nx">@_createHeaderColumns</span><span class="p">(</span><span class="nx">oController</span><span class="p">)</span>
+      <span class="c1"># ここにODataをバインドしていきます。</span>
+      <span class="nv">items:</span>
+        <span class="nv">path: </span><span class="s">"/Products"</span>
+        <span class="nv">template: </span><span class="nx">@_createTemplate</span><span class="p">(</span><span class="nx">oController</span><span class="p">)</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p><code>items</code>プロパティにデータバインドを定義していきます。<code>path</code>には利用するEntitiesを、<code>template</code>には1行を生成するためのテンプレート定義を設定します。</p>
+
+<p>結果は以下の通りです。
+<img src="docs/img/5.3.a-1.png" alt="itemsにデータバインドのみ"></p>
+
+<p>結果は48件表示されると思いますが、列の中身はすべて同じです。<br>
+これはテンプレートの中身が固定値であるためです。次は、実際にテンプレートをODataの内容にあわせて表示させてみましょう。今度は<code>view/SearchList.fragment.coffee</code>の<code>_createTemplate</code>を変更します。</p>
+
+<p><em>view/SearchList.fragment.coffee:_createTemplate()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>  <span class="nv">_createTemplate: </span><span class="nf">(oController) -&gt;</span>
+    <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ColumnListItem</span>
+      <span class="nv">type: </span><span class="s">"Navigation"</span>
+      <span class="nv">press: </span><span class="p">[</span><span class="nx">oController</span><span class="p">.</span><span class="nx">onItemPress</span><span class="p">,</span> <span class="nx">oController</span><span class="p">]</span>
+      <span class="nv">cells: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{Supplier/CompanyName}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{Category/CategoryName}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectIdentifier</span>
+          <span class="nv">title: </span><span class="s">"{ProductName}"</span>
+          <span class="nv">text: </span><span class="s">"{QuantityPerUnit}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectNumber</span>
+          <span class="nv">number: </span><span class="s">"{UnitsOnOrder}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectNumber</span>
+          <span class="nv">number: </span><span class="s">"{UnitsInStock}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectNumber</span>
+          <span class="nv">number: </span><span class="s">"{UnitPrice}"</span>
+          <span class="nv">unit: </span><span class="s">"USD"</span>
+      <span class="p">]</span>
+</pre></div>
+
+<p>テンプレート定義は<code>sap.m.ColumnListItem</code>を作成して返します。<br><code>cells</code>の中に各セルとなるUIコントロールが定義されている構造が読み取れると思います。各UIコントロールの中の<code>{</code>から<code>}</code>の中に含まれている文字列が<strong>path</strong>と呼ばれるもので、ODataのEntitiesからの相対的な位置を指定して各UIコントロールに対してピンポイントでデータバインドを定義しています。<br>
+プロパティからさらに子のプロパティを参照する場合の区切り文字は<code>/</code>を指定します。</p>
+
+<p>結果は以下の通りです。
+<img src="docs/img/5.3.a-2.png" alt="templateもデータバインドのみ"></p>
+
+<p><code>Product</code>の内容は表示することができましたが、<code>Supplier</code>と<code>Category</code>の内容が表示されません。これはODataのデータ取得の際に、返却されるデータにこれらの関連するEntityのデータが含まれていないためです。</p>
+
+<p>返却されくるデータに関連するEntityのデータを含めるためには、<code>$expand</code>と<code>$select</code>を利用します。これらをOpenUI5で扱うためには、先ほどの取り上げた商品リストテーブルUIのデータバインドする際に、パラメータを渡すように設定します。<br><code>view/SearchList.fragment.coffee</code>の<code>createContent</code>のデータバインド部分を変更します。</p>
+
+<p><em>view/SearchList.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+    <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Table</span>
+      <span class="nv">id: </span><span class="nx">oController</span><span class="p">.</span><span class="nx">getView</span><span class="p">().</span><span class="nx">createId</span><span class="p">(</span><span class="s">"productList"</span><span class="p">)</span>
+      <span class="nv">growing: </span><span class="kc">true</span>
+      <span class="nv">growingThreshold: </span><span class="mi">5</span>
+      <span class="nv">growingTriggerText: </span><span class="s">"もっと見る"</span>
+      <span class="nv">noDataText: </span><span class="s">"データがありません。"</span>
+      <span class="nv">headerToolbar: </span><span class="nx">@_createHeaderToolbar</span><span class="p">(</span><span class="nx">oController</span><span class="p">)</span>
+      <span class="nv">columns: </span><span class="nx">@_createHeaderColumns</span><span class="p">(</span><span class="nx">oController</span><span class="p">)</span>
+      <span class="c1"># ここにODataをバインドしていきます。</span>
+      <span class="nv">items:</span>
+        <span class="nv">path: </span><span class="s">"/Products"</span>
+        <span class="nv">template: </span><span class="nx">@_createTemplate</span><span class="p">(</span><span class="nx">oController</span><span class="p">)</span>
+        <span class="nv">parameters:</span>
+          <span class="nv">expand: </span><span class="s">"Category, Supplier"</span>
+          <span class="nv">select: </span><span class="s">"*, Category/CategoryName, Supplier/CompanyName"</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p>データバインドする際のプロパティに<code>parameters</code>を含める事で、ODataへデータアクセスする際にパラメータを渡すことができるようになります。</p>
+
+<p>結果は以下の通りです。
+<img src="docs/img/5.3.a-3.png" alt="商品リスト"></p>
+
+<p>これで一通りODataのEntitiesをテーブルにデータバインドして表示することができました。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h2>
+<a name="53b-%E5%95%86%E5%93%81%E5%90%8D%E3%81%A7%E3%81%AE%E6%A4%9C%E7%B4%A2" class="anchor" href="#53b-%E5%95%86%E5%93%81%E5%90%8D%E3%81%A7%E3%81%AE%E6%A4%9C%E7%B4%A2"><span class="octicon octicon-link"></span></a><a name="search">5.3.b 商品名での検索</a>
+</h2>
+
+<p>では、次に商品名での検索機能を作っていきましょう。<br>
+ODataSeviceのEntitiesに対して何らかのFilter処理を施す場合は、<code>$filter</code>を利用します。<br><code>view/Master.controller.coffee</code>の<code>onSearch</code>に検索処理を実装していきます。</p>
+
+<p><em>view/Master.controller.coffee:onSearch()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">onSearch: </span><span class="nf">(evt) -&gt;</span>
+    <span class="c1"># ここに検索処理を書きます。</span>
+
+    <span class="c1"># 画面からの入力値を受け取ってfilter定義を作成</span>
+    <span class="nv">query = </span><span class="nx">@query</span><span class="p">.</span><span class="nx">getValue</span><span class="p">()</span>
+    <span class="nv">filters = </span><span class="p">[</span><span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">Filter</span><span class="p">(</span><span class="s">"ProductName"</span><span class="p">,</span> <span class="s">"Contains"</span><span class="p">,</span> <span class="nx">query</span><span class="p">)]</span>
+
+    <span class="c1"># 商品リストテーブルUIのデータバインド定義を取得してfilter設定</span>
+    <span class="nv">binding = </span><span class="nx">@productList</span><span class="p">.</span><span class="nx">getBinding</span> <span class="s">"items"</span>
+    <span class="nx">binding</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">filters</span><span class="p">,</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">FilterType</span><span class="p">.</span><span class="nx">Application</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p>filterの演算子は<code>sap.ui.model.FilterOperator</code>に定義されているものを利用します。今回はあいまい検索の想定で<code>Contains</code>を指定しています。それ以外の設定値は以下の通りです。</p>
+
+<div class="highlight highlight-js"><pre><span class="p">{</span>
+  <span class="nx">BT</span><span class="o">:</span> <span class="s2">"BT"</span>
+  <span class="nx">Contains</span><span class="o">:</span> <span class="s2">"Contains"</span>
+  <span class="nx">EQ</span><span class="o">:</span> <span class="s2">"EQ"</span>
+  <span class="nx">EndsWith</span><span class="o">:</span> <span class="s2">"EndsWith"</span>
+  <span class="nx">GE</span><span class="o">:</span> <span class="s2">"GE"</span>
+  <span class="nx">GT</span><span class="o">:</span> <span class="s2">"GT"</span>
+  <span class="nx">LE</span><span class="o">:</span> <span class="s2">"LE"</span>
+  <span class="nx">LT</span><span class="o">:</span> <span class="s2">"LT"</span>
+  <span class="nx">NE</span><span class="o">:</span> <span class="s2">"NE"</span>
+  <span class="nx">StartsWith</span><span class="o">:</span> <span class="s2">"StartsWith"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>ちなみに、filter定義の<code>filters</code>はArrayであるため、複数のfilter定義を含めることが出来ます。</p>
+
+<p>では、商品名の部分に<code>Cha</code>を入力して検索してみましょう。<br>
+結果は以下の通りです。
+<img src="docs/img/5.3.b-1.png" alt="商品名検索"></p>
+
+<p>このままでもいいのですが、検索時などのODataServiceへのデータアクセスの際にユーザーに対してフィードバックがありませんので、データアクセス時にローディングイメージを表示するようにしましょう。<br>
+OpenUI5ではODataServiceはODataModelとして取り扱います。ODataModelにはODataServiceへのデータアクセスに関連するライフサイクルイベントが利用できますので、今回はライフサイクルイベントを利用してローディングイメージを表示させてみましょう。<br><code>Componemt.coffee</code>の<code>init</code>を変更しましょう。  </p>
+
+<p><em>Componemt.coffee:init()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="nv">init: </span><span class="nf">-&gt;</span>
+
+    <span class="p">...</span>
+
+    <span class="c1"># ここにOdataServiceのエンドポイントを設定します</span>
+    <span class="c1"># /V3/Northwind/Northwind.svc/</span>
+    <span class="nv">endpoint = </span><span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">odata</span><span class="p">.</span><span class="nx">ODataModel</span> <span class="s">"/V3/Northwind/Northwind.svc/"</span><span class="p">,</span> <span class="kc">true</span>
+    <span class="nx">@setModel</span> <span class="nx">endpoint</span>
+
+    <span class="c1"># バックエンドにデータ問い合わせの際のローディングイメージを表示します。</span>
+    <span class="nv">busy = </span><span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">BusyDialog</span>
+      <span class="nv">title: </span><span class="s">"Loading data"</span>
+    <span class="nx">endpoint</span><span class="p">.</span><span class="nx">attachRequestSent</span> <span class="nf">-&gt;</span><span class="err">　</span><span class="nx">busy</span><span class="p">.</span><span class="nx">open</span><span class="p">()</span>
+    <span class="nx">endpoint</span><span class="p">.</span><span class="nx">attachRequestCompleted</span> <span class="nf">-&gt;</span><span class="err">　</span><span class="nx">busy</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p><code>new sap.m.BusyDialog</code>でローディングイメージを表示するダイアログを生成します。上で作成したODataModeオブジェクトに対して<code>attachRequestSent</code>と<code>attachRequestCompleted</code>にてライフサイクルイベントが発生したタイミングで処理を割り込ませる事が可能です。<br><code>attachRequestSent</code>はODataServiceに対するデータアクセスが開始されたタイミングで発生します。
+<code>attachRequestCompleted</code>はデータアクセスが完了したタイミングで発生します。成功、失敗は問いません。</p>
+
+<p>先ほどと同じ商品名の部分に<code>Cha</code>を入力して検索してみましょう。<br>
+結果は以下の通りです。
+<img src="docs/img/5.3.b-2.png" alt="商品名検索ローディングあり"></p>
+
+<p>実際には、ローディング開始のタイミングが少し遅いと思いますので、ボタンを押したタイミングでローディングを表示させるなど、工夫が必要です。</p>
+
+<p>ここまでで商品検索処理を実現することができました。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h2>
+<a name="53c-%E5%95%86%E5%93%81%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E3%82%BD%E3%83%BC%E3%83%88%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF" class="anchor" href="#53c-%E5%95%86%E5%93%81%E3%83%AA%E3%82%B9%E3%83%88%E3%81%AE%E3%82%BD%E3%83%BC%E3%83%88%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF"><span class="octicon octicon-link"></span></a><a name="sortandfilter">5.3.c 商品リストのソート、フィルタ</a>
+</h2>
+
+<p>ではまずソート機能から作っていきましょう。<br>
+テーブルの右上の<img src="docs/img/5.3.c-1.png" alt="セッティングボタン">こちらのアイコンを押すと、テーブルの表示設定を変更できるダイアログ（以下、ViewSettingsダイアログ）が表示されます。まだソート項目には固定値が表示されているため、実際のテーブルの項目を表示させるようにしましょう。<br><code>ViewSettings.fragment.coffee</code>の<code>createContent</code>を変更しましょう。</p>
+
+<p><em>ViewSettings.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsDialog</span>
+      <span class="nv">title: </span><span class="s">"ソート&amp;フィルタ"</span>
+      <span class="nv">confirm: </span><span class="p">[</span><span class="nx">oController</span><span class="p">.</span><span class="nx">onChangeViewSettings</span><span class="p">,</span> <span class="nx">oController</span><span class="p">]</span>
+      <span class="c1"># ここにソート条件を書きます</span>
+      <span class="nv">sortItems: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+          <span class="nv">text: </span><span class="s">"ProductName"</span>
+          <span class="nv">key: </span><span class="s">"ProductName"</span>
+          <span class="nv">selected: </span><span class="kc">true</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+          <span class="nv">text: </span><span class="s">"Category"</span>
+          <span class="nv">key: </span><span class="s">"Category/CategoryName"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+          <span class="nv">text: </span><span class="s">"Supplier"</span>
+          <span class="nv">key: </span><span class="s">"Supplier/CompanyName"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+          <span class="nv">text: </span><span class="s">"Order"</span>
+          <span class="nv">key: </span><span class="s">"UnitsOnOrder"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+          <span class="nv">text: </span><span class="s">"Stock"</span>
+          <span class="nv">key: </span><span class="s">"UnitsInStock"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+          <span class="nv">text: </span><span class="s">"Price"</span>
+          <span class="nv">key: </span><span class="s">"UnitPrice"</span>
+      <span class="p">]</span>
+      <span class="nv">filterItems: </span><span class="p">[</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p><code>sap.m.ViewSettingsDialog</code>の<code>sortItems</code>プロパティのArrayに<code>sap.m.ViewSettingsItem</code>を追加していきます。<br><code>sap.m.ViewSettingsItem</code>が実際のViewSettingsダイアログにソート項目として表示されるものです。<code>text</code>には表示ラベル、<code>key</code>はソートを選択した場合のキー項目に該当します。基本的に何を設定してもいいのですが、後の処理での使い易さを考慮して、通常はODataのpathを設定します。</p>
+
+<p>結果は以下の通りです。
+<img src="docs/img/5.3.c-2.png" alt="ソートダイアログ"></p>
+
+<p>次に実際のソート処理を作成していきます。ソート処理は前め商品名検索と基本的には同じです。<br><code>Master.conrtoller.coffee</code>の<code>onChangeViewSettings</code>を変更しましょう。</p>
+
+<p><em>Master.conrtoller.coffee:onChangeViewSettings()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">onChangeViewSettings: </span><span class="nf">(evt) -&gt;</span>
+    <span class="c1"># ここにソートとフィルタ処理を書きます。</span>
+    <span class="nv">params = </span><span class="nx">evt</span><span class="p">.</span><span class="nx">getParameters</span><span class="p">()</span>
+    <span class="nv">binding = </span><span class="nx">@productList</span><span class="p">.</span><span class="nx">getBinding</span> <span class="s">"items"</span>
+
+    <span class="c1">#ソート設定</span>
+    <span class="nv">sortSettings = </span><span class="p">[]</span>
+    <span class="k">if</span> <span class="nx">params</span><span class="p">.</span><span class="nx">sortItem</span>
+      <span class="nv">path = </span><span class="nx">params</span><span class="p">.</span><span class="nx">sortItem</span><span class="p">.</span><span class="nx">getKey</span><span class="p">()</span>
+      <span class="nv">descending = </span><span class="nx">params</span><span class="p">.</span><span class="nx">sortDescending</span>
+      <span class="nx">sortSettings</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">Sorter</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">descending</span><span class="p">)</span>
+
+    <span class="nx">binding</span><span class="p">.</span><span class="nx">sort</span> <span class="nx">sortSettings</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p>商品リストテーブルのデータバインド設定に対して<code>new sap.ui.model.Sorter</code>オブジェクトを設定します。</p>
+
+<p>では、Stockの降順でソートしてみます。<br>
+結果は以下の通りです。
+<img src="docs/img/5.3.c-3.png" alt="ソート機能"></p>
+
+<p>Stockの大きい順に表示することができました。早速次はフィルタ機能を作っていきます。<br>
+ソートと同様にViewSettingsダイアログの設定から行います。  </p>
+
+<p><code>ViewSettings.fragment.coffee</code>の<code>createContent</code>を変更しましょう。</p>
+
+<p><em>ViewSettings.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsDialog</span>
+      <span class="nv">title: </span><span class="s">"ソート&amp;フィルタ"</span>
+      <span class="nv">confirm: </span><span class="p">[</span><span class="nx">oController</span><span class="p">.</span><span class="nx">onChangeViewSettings</span><span class="p">,</span> <span class="nx">oController</span><span class="p">]</span>
+      <span class="c1"># ここにソート条件を書きます</span>
+      <span class="nv">sortItems: </span><span class="p">[</span>
+
+        <span class="p">...</span>
+
+      <span class="p">]</span>
+      <span class="c1"># ここにフィルタ条件を書きます</span>
+      <span class="nv">filterItems: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsFilterItem</span>
+          <span class="nv">text: </span><span class="s">"Order"</span>
+          <span class="nv">key: </span><span class="s">"UnitsOnOrder"</span>
+          <span class="nv">multiSelect: </span><span class="kc">false</span>
+          <span class="nv">items: </span><span class="p">[</span>
+            <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+              <span class="nv">text: </span><span class="s">"less than 10"</span>
+              <span class="nv">key: </span><span class="s">"UnitsOnOrder___LE___10___X"</span>
+            <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+              <span class="nv">text: </span><span class="s">"between 10 and 20"</span>
+              <span class="nv">key: </span><span class="s">"UnitsOnOrder___BT___10___20"</span>
+            <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+              <span class="nv">text: </span><span class="s">"greater than 20"</span>
+              <span class="nv">key: </span><span class="s">"UnitsOnOrder___GT___20___X"</span>
+          <span class="p">]</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsFilterItem</span>
+          <span class="nv">text: </span><span class="s">"Stock"</span>
+          <span class="nv">key: </span><span class="s">"UnitsInStock"</span>
+          <span class="nv">multiSelect: </span><span class="kc">false</span>
+          <span class="nv">items: </span><span class="p">[</span>
+            <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+              <span class="nv">text: </span><span class="s">"less than 10"</span>
+              <span class="nv">key: </span><span class="s">"UnitsInStock___LE___10___X"</span>
+            <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+              <span class="nv">text: </span><span class="s">"between 10 and 20"</span>
+              <span class="nv">key: </span><span class="s">"UnitsInStock___BT___10___20"</span>
+            <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ViewSettingsItem</span>
+              <span class="nv">text: </span><span class="s">"greater than 20"</span>
+              <span class="nv">key: </span><span class="s">"UnitsInStock___GT___20___X"</span>
+          <span class="p">]</span>
+      <span class="p">]</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p><code>sap.m.ViewSettingsDialog</code>の<code>filterItems</code>プロパティのArrayに<code>ssap.m.ViewSettingsFilterItem</code>を追加していきます。<br><code>text</code>と<code>key</code>はソート時と同じです、フィルタ条件がいくつかあるため<code>items</code>プロパティに<code>sap.m.ViewSettingsItem</code>を複数設定します。<br><code>sap.m.ViewSettingsItem</code>の<code>key</code>の値は<code>UnitsOnOrder___LE___10___X</code>のようになっていますが、後のフィルタ処理にて<code>___</code>を区切って分割して値を利用しています。<br>
+ちょっと強引な実装ですね。</p>
+
+<p>結果は以下の通りです。
+<img src="docs/img/5.3.c-4.png" alt="ソートダイアログフィルタ"></p>
+
+<p><code>Master.conrtoller.coffee</code>の<code>onChangeViewSettings</code>を変更しましょう。</p>
+
+<p><em>Master.conrtoller.coffee:onChangeViewSettings()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">onChangeViewSettings: </span><span class="nf">(evt) -&gt;</span>
+
+    <span class="c1"># ここにソートとフィルタ処理を書きます。</span>
+    <span class="nv">params = </span><span class="nx">evt</span><span class="p">.</span><span class="nx">getParameters</span><span class="p">()</span>
+    <span class="nv">binding = </span><span class="nx">@productList</span><span class="p">.</span><span class="nx">getBinding</span> <span class="s">"items"</span>
+
+    <span class="c1">#ソート設定</span>
+    <span class="nv">sortSettings = </span><span class="p">[]</span>
+    <span class="k">if</span> <span class="nx">params</span><span class="p">.</span><span class="nx">sortItem</span>
+      <span class="nv">path = </span><span class="nx">params</span><span class="p">.</span><span class="nx">sortItem</span><span class="p">.</span><span class="nx">getKey</span><span class="p">()</span>
+      <span class="nv">descending = </span><span class="nx">params</span><span class="p">.</span><span class="nx">sortDescending</span>
+      <span class="nx">sortSettings</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">Sorter</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">descending</span><span class="p">)</span>
+    <span class="nx">binding</span><span class="p">.</span><span class="nx">sort</span> <span class="nx">sortSettings</span>
+
+    <span class="c1">#フィルタ設定</span>
+    <span class="nv">filterSettings = </span><span class="p">[]</span>
+    <span class="nx">jQuery</span><span class="p">.</span><span class="nx">each</span> <span class="nx">params</span><span class="p">.</span><span class="nx">filterItems</span><span class="p">,</span> <span class="nf">(i, item) -&gt;</span>
+      <span class="nv">settingArray = </span><span class="nx">item</span><span class="p">.</span><span class="nx">getKey</span><span class="p">().</span><span class="nx">split</span> <span class="s">"___"</span>
+      <span class="nv">filter = </span><span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">Filter</span> <span class="nx">settingArray</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">settingArray</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">settingArray</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nx">settingArray</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+      <span class="nx">filterSettings</span><span class="p">.</span><span class="nx">push</span> <span class="nx">filter</span>
+    <span class="nx">binding</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">filterSettings</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p>いままで行ってきた商品名検索とソート処理とほとんど同じだとおもいます。</p>
+
+<p>では、orderが10〜20の範囲でフィルタしてみます。<br>
+結果は以下の通りです。
+<img src="docs/img/5.3.c-5.png" alt="フィルタ機能"></p>
+
+<p>ここまででソートとフィルタ機能を作る事ができました。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="54-%E5%95%86%E5%93%81%E8%A9%B3%E7%B4%B0%E3%81%AE%E5%AE%9F%E8%A3%85" class="anchor" href="#54-%E5%95%86%E5%93%81%E8%A9%B3%E7%B4%B0%E3%81%AE%E5%AE%9F%E8%A3%85"><span class="octicon octicon-link"></span></a><a name="product_impl">5.4 商品詳細の実装</a>
+</h1>
+
+<p>次からは商品情報詳細画面の実装です。<br>
+この画面では商品情報、カテゴリー情報、メーカー情報を参照することができます。<br>
+画面上部に商品情報表示エリア、画面下部がカテゴリー情報とメーカー情報のタブとなっています。</p>
+
+<h2>
+<a name="54a-%E5%95%86%E5%93%81%E6%83%85%E5%A0%B1%E3%81%AE%E5%8F%82%E7%85%A7" class="anchor" href="#54a-%E5%95%86%E5%93%81%E6%83%85%E5%A0%B1%E3%81%AE%E5%8F%82%E7%85%A7"><span class="octicon octicon-link"></span></a><a name="product">5.4.a 商品情報の参照</a>
+</h2>
+
+<p>まず、商品検索画面から<code>ProductID</code>を受け取って商品情報画面に表示します。<code>ProductID</code>は商品情報画面を表示する際のURLハッシュ末尾の数値が該当します。<br>
+例）<br><code>http://localhost:9000/#/product/3</code>の<code>3</code></p>
+
+<p>OpenUI5ではroutingする際のパラメータとして渡されます。商品情報詳細画面へのroutingの処理は<code>Master.controlle.coffee</code>の<code>onItemPress</code>に書かれています。</p>
+
+<p><em>view/Master.controller.coffee:onItemPress()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">onItemPress: </span><span class="nf">(evt) -&gt;</span>
+    <span class="nv">context = </span><span class="nx">evt</span><span class="p">.</span><span class="nx">getSource</span><span class="p">().</span><span class="nx">getBindingContext</span><span class="p">()</span>
+    <span class="nx">@router</span><span class="p">.</span><span class="nx">navTo</span> <span class="s">"Detail"</span><span class="p">,</span>
+      <span class="nv">id: </span><span class="nx">context</span><span class="p">.</span><span class="nx">getObject</span><span class="p">().</span><span class="nx">ProductID</span>
+
+  <span class="p">....</span>
+
+</pre></div>
+
+<p><code>@router.navTo</code>の第1引数に次の画面のrouter内でのエイリアス名、第2引数にURLハッシュにとなるパラメータ<code>ProductID</code>を渡しています。</p>
+
+<p>では、この<code>ProductID</code>を商品情報詳細画面にて受け取って処理しましょう。<code>Detail.controlle.coffee</code>の<code>onRouteMatched</code>を変更します。<br>
+（とは言っても、URLハッシュからProductIDを取得する部分は既に実装済みです。）</p>
+
+<p><em>view/Detail.controller.coffee:onItemPress()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">onRouteMatched: </span><span class="nf">(evt) -&gt;</span>
+    <span class="k">unless</span> <span class="nx">evt</span><span class="p">.</span><span class="nx">getParameter</span><span class="p">(</span><span class="s">"name"</span><span class="p">)</span> <span class="o">is</span> <span class="s">"Detail"</span>
+      <span class="k">return</span>
+
+    <span class="c1"># URLパラメータから商品IDを取得します。</span>
+    <span class="vi">@productId = </span><span class="nx">evt</span><span class="p">.</span><span class="nx">getParameters</span><span class="p">().</span><span class="nx">arguments</span><span class="p">.</span><span class="nx">id</span>
+
+    <span class="c1"># ここでEntityにアクセスします。</span>
+    <span class="nx">@getView</span><span class="p">().</span><span class="nx">bindElement</span> <span class="s">"/Products(</span><span class="si">#{</span><span class="nx">@productId</span><span class="si">}</span><span class="s">)"</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p>viewの<code>bindElement</code>にそのviewで参照したいODataModelのPathを設定します。今回のPriductsの場合、ProductIDがKeyとなるので実際は以下のようなPathを設定しています。<br>
+例）<br><code>/Products(2)</code><br>
+ProductIDが2の場合</p>
+
+<p>次に、商品情報表示エリアにODataのプロパティをデータバインドしていきます。<code>ProductInfo.fragment.coffee</code>の<code>createContent</code>を変更します。<br><code>title</code>、<code>number</code>、<code>attributes</code>の部分にはデータバインドしたいプロパティをそのまま設定します。<br><code>statuses</code>はデータバインドをする際に値を変更formatterを使用した、少し高度なデータバインドを行います。</p>
+
+<p><em>view/ProductInfo.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectHeader</span>
+      <span class="nv">title: </span><span class="s">"{ProductName}"</span>
+      <span class="nv">number: </span><span class="s">"{UnitPrice}"</span>
+      <span class="nv">numberUnit: </span><span class="s">"USD"</span>
+      <span class="nv">statuses: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectStatus</span>
+          <span class="nv">text: </span>
+            <span class="nv">parts: </span><span class="p">[</span>
+              <span class="p">{</span><span class="nv">path: </span><span class="s">"UnitsInStock"</span><span class="p">}</span>
+              <span class="p">{</span><span class="nv">path: </span><span class="s">"UnitsOnOrder"</span><span class="p">}</span>
+            <span class="p">]</span>
+            <span class="nv">formatter: </span><span class="nf">(stock, order) -&gt;</span>
+              <span class="s">"</span><span class="si">#{</span><span class="nx">order</span><span class="si">}</span><span class="s"> / </span><span class="si">#{</span><span class="nx">stock</span><span class="si">}</span><span class="s"> (Order/Stock)"</span>
+          <span class="nv">state:</span>
+            <span class="nv">path: </span><span class="s">"UnitsInStock"</span>
+            <span class="nv">formatter: </span><span class="nf">(stock) -&gt;</span>
+              <span class="k">return</span> <span class="k">if</span> <span class="nx">stock</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="k">then</span> <span class="s">"Error"</span> <span class="k">else</span> <span class="s">"Success"</span>
+      <span class="p">]</span>
+      <span class="nv">attributes: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">ObjectAttribute</span>
+          <span class="nv">text: </span><span class="s">"{QuantityPerUnit}"</span>
+
+      <span class="p">]</span>
+
+  <span class="p">...</span>
+
+</pre></div>
+
+<p>formatterを使ったデータバインドについて、少し解説します。<br>
+まず、formatterを使ったデータバインドの基本形は、データバインドしたいプロパティに対して<code>path</code>と<code>formatter</code>の2つを設定します。<code>path</code>にはデータバインドしたいOData側のプロパティ、<code>formatter</code>は実際にデータがバインドされた際に実行されるcallbackで、バインドされた値が引数で与えられます。</p>
+
+<p>この基本形を用いたものが<code>state</code>の部分です、<code>state</code>ではstock=10を閾値に返すステータスを変化させています。</p>
+
+<p>次に、複数のODataのプロパティを利用して1つの出力とする例です。複数の複数のODataのプロパティを利用する場合は、<code>path</code>の部分に利用したいプロパティを<code>parts</code>の中に含めて定義します。バインドされた値は<code>formatter</code>のcallbackの引数として与えられます。</p>
+
+<p><code>text</code>の部分は複数のプロパティを利用したもので、在庫数と受注数の2つを1つのフィールドに表示しています。</p>
+
+<p>結果は以下の通りです。
+<img src="docs/img/5.4.a-1.png" alt="商品情報"></p>
+
+<p>商品検索画面に戻って、別の商品を選択して商品詳細画面に遷移すると商品情報が追従して表示されるはずです。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h2>
+<a name="54b-%E3%82%AB%E3%83%86%E3%82%B4%E3%83%AA%E3%83%BC%E6%83%85%E5%A0%B1%E3%81%A8%E3%83%A1%E3%83%BC%E3%82%AB%E3%83%BC%E6%83%85%E5%A0%B1%E3%81%AE%E5%8F%82%E7%85%A7" class="anchor" href="#54b-%E3%82%AB%E3%83%86%E3%82%B4%E3%83%AA%E3%83%BC%E6%83%85%E5%A0%B1%E3%81%A8%E3%83%A1%E3%83%BC%E3%82%AB%E3%83%BC%E6%83%85%E5%A0%B1%E3%81%AE%E5%8F%82%E7%85%A7"><span class="octicon octicon-link"></span></a><a name="category">5.4.b カテゴリー情報とメーカー情報の参照</a>
+</h2>
+
+<p>ここから先は難しいパートはありません。ここまで理解した知識で作ることができます。
+残るはタブの中にカテゴリー情報とメーカー情報を表示させたら完成です。</p>
+
+<p>早速<code>Detail.controlle.coffee</code>の<code>onRouteMatched</code>を変更してタブに表示するデータをバインドしていきましょう。</p>
+
+<p><em>view/Detail.controller.coffee:onItemPress()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">onRouteMatched: </span><span class="nf">(evt) -&gt;</span>
+
+    <span class="p">...</span>
+
+    <span class="c1"># tabもデータをバインドします</span>
+    <span class="nx">@tabs</span><span class="p">.</span><span class="nx">getItems</span><span class="p">().</span><span class="nx">forEach</span> <span class="nf">(item) -&gt;</span>
+      <span class="nx">item</span><span class="p">.</span><span class="nx">bindElement</span> <span class="nx">item</span><span class="p">.</span><span class="nx">getKey</span><span class="p">()</span>
+
+  <span class="p">...</span>
+
+
+</pre></div>
+
+<p>それぞれのタブは<code>@tabs.getItems()</code>にて取得できるため、forEachでそれぞれのタブに対して<code>bindElement</code>を使ってバインドしたいODataのPathを設定します。<br>
+それぞれのタブのkeyにはEntityTypeの<code>NavigationProperty</code>（SupplierとCategory）が設定されています。既に商品情報画面のViewにはEntity<code>/Products(2)</code>がバインドされているため、Viewの子コントロールであるタブはそれ以下のPathを設定します。実際のデータバインドしているPathは次のようになっています。<br>
+例）KeyがCategoryの場合<br><code>/Products(2)/Category</code></p>
+
+<p>次は、それぞれのタブのUIコンポーネントにODataのプロパティをバインドしていきましょう。<code>CategoryInfoForm.fragment.coffee</code>と<code>SupplierAddressForm.fragment.coffee</code>を変更します。</p>
+
+<p><em>view/CategoryInfoForm.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="nv">form = </span><span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">form</span><span class="p">.</span><span class="nx">SimpleForm</span>
+      <span class="nv">minWidth: </span><span class="mi">1024</span><span class="p">,</span>
+      <span class="nv">editable: </span><span class="kc">false</span>
+      <span class="nv">content: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">Title</span>
+          <span class="nv">text: </span><span class="s">"Category"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"CategoryID"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{CategoryID}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"CategoryName"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{CategoryName}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"Description"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{Description}"</span>
+      <span class="p">]</span>
+
+    <span class="p">...</span>
+
+</pre></div>
+
+<p><em>view/SupplierAddressForm.fragment.coffee:createContent()</em></p>
+
+<div class="highlight highlight-coffeescript"><pre>
+  <span class="p">...</span>
+
+  <span class="nv">createContent: </span><span class="nf">(oController) -&gt;</span>
+    <span class="nv">form = </span><span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">form</span><span class="p">.</span><span class="nx">SimpleForm</span>
+      <span class="nv">minWidth: </span><span class="mi">1024</span><span class="p">,</span>
+      <span class="nv">editable: </span><span class="kc">false</span>
+      <span class="nv">content: </span><span class="p">[</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">Title</span>
+          <span class="nv">text: </span><span class="s">"Company"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"SupplierID"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{SupplierID}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"CompanyName"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{CompanyName}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">ui</span><span class="p">.</span><span class="nx">core</span><span class="p">.</span><span class="nx">Title</span>
+          <span class="nv">text: </span><span class="s">"Contact"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"ContactName"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{ContactName}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"ContactTitle"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{ContactTitle}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"PostalCode"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{PostalCode}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"Addreess"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span>
+            <span class="nv">parts: </span><span class="p">[</span>
+              <span class="p">{</span><span class="nv">path: </span><span class="s">"Country"</span><span class="p">}</span>
+              <span class="p">{</span><span class="nv">path: </span><span class="s">"Region"</span><span class="p">}</span>
+              <span class="p">{</span><span class="nv">path: </span><span class="s">"City"</span><span class="p">}</span>
+              <span class="p">{</span><span class="nv">path: </span><span class="s">"Address"</span><span class="p">}</span>
+            <span class="p">]</span>
+            <span class="nv">formatter: </span><span class="nf">(country = "", region = "", city = "", address = "") -&gt;</span>
+              <span class="s">"</span><span class="si">#{</span><span class="nx">country</span><span class="si">}</span><span class="s"> </span><span class="si">#{</span><span class="nx">region</span><span class="si">}</span><span class="s"> </span><span class="si">#{</span><span class="nx">city</span><span class="si">}</span><span class="s"> </span><span class="si">#{</span><span class="nx">address</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"Phone"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{Phone}"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Label</span>
+          <span class="nv">text: </span><span class="s">"HomePage"</span>
+        <span class="k">new</span> <span class="nx">sap</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Text</span>
+          <span class="nv">text: </span><span class="s">"{HomePage}"</span>
+      <span class="p">]</span>
+
+      <span class="p">...</span>
+
+</pre></div>
+
+<p>結果は以下の通りです。<br>
+カテゴリー情報
+<img src="docs/img/5.4.b-1.png" alt="カテゴリー情報">
+メーカー情報
+<img src="docs/img/5.4.b-2.png" alt="メーカー情報"></p>
+
+<p>これで商品検索画面と商品詳細画面が完成しました。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+
+<h1>
+<a name="6-%E3%81%BE%E3%81%A8%E3%82%81" class="anchor" href="#6-%E3%81%BE%E3%81%A8%E3%82%81"><span class="octicon octicon-link"></span></a><a name="summary">6 まとめ</a>
+</h1>
+
+<p>以上でチュートリアルは終了です。<br>
+ODataをOpenUI5とどのように統合すれば良いかについては、理解が深まったかと思います。</p>
+
+<p>また、ODataの柔軟なデータアクセス能力とOpenUI5のUIコンポーネントへのデータバインドを組み合わせることで、フロントエンドからバックエンドまで優れた隠蔽化と標準化がされ、これからの企業向けWebアプリケーション開発における「OpenUI5＋ODataService」という新しい可能性（選択肢）を感じていただけたのではないかと思います。</p>
+
+<p>まだ、ODataServiceをどのように構築するかという課題はありますが、ODataServiceとUIフレームワークを組み合わせる事によって得られる、高い隠蔽化と標準化によって非常に効率的かつメンテナンス性良くWebアプリケーションが構築できる可能性があることが分かります。</p>
+
+<p><strong><a href="#table">[⬆]</a></strong></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Openui5-with-odataservice maintained by <a href="https://github.com/mitsuruog">mitsuruog</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-53035841-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
