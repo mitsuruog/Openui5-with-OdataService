@@ -9,3 +9,5 @@ ODataをOpenUI5とどのように統合すれば良いかについては、理�
 まだ、ODataServiceをどのように構築するかという課題はありますが、ODataServiceとUIフレームワークを組み合わせる事によって得られる、高い隠蔽化と標準化によって非常に効率的かつメンテナンス性良くWebアプリケーションが構築できる可能性があることが分かります。
 
 **[[⬆]](#table)**
+
+[![Analytics](https://ga-beacon.appspot.com/UA-53035841-2/Openui5-with-OdataService/readme)](https://github.com/mitsuruog/Openui5-with-OdataService)
