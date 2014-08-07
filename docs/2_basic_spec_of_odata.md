@@ -5,7 +5,7 @@ ODataはHTTPをベースに構成されているため、1つのバックエン�
 バックエンドへの問い合わせは通常の`GET`、`POST`、`PUT`、`DELETE`で行い、返されるデータも`xml`、 `json`、`atom`形式です。
 
 しかし、ODataはバックエンドとの間の複数のHTTP問い合わせを統合して標準化しています。そしてODataを返すバックエンドがODataServiceと呼ばれるものです。  
-ODataServiceは、内部に「インターフェース層」「実体化層」「抽象化層」の3つで構成されています。フロントエンドがODataServiceにアクセスする際は、ODataのデータモデルを提供する「Metadata」か、実際のデータAPIインターフェース「EntityConteiner」のどちらかを呼び出します。
+ODataServiceは、内部に「インターフェース層」「実体化層」「抽象化層」の3つで構成されています。フロントエンドがODataServiceにアクセスする際は、ODataのデータモデルを提供する「Metadata」か、実際のデータAPIインターフェース「EntityContainer」のどちらかを呼び出します。
 
 こちらが、ODataServiceについての概念図です。  
 ![ODataService概念図](img/3-1.png)
@@ -112,7 +112,7 @@ Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインス�
 
 ### Association
 
-2つ以上のEntiryTypeの関連を定義したものです。RDBMSのスキーマ定義における外部キーに相当します。先ほどの2つのEntityType`Category`と`Entity`には関連がありますので、それを見てみましょう。
+2つ以上のEntityTypeの関連を定義したものです。RDBMSのスキーマ定義における外部キーに相当します。先ほどの2つのEntityType`Category`と`Entity`には関連がありますので、それを見てみましょう。
 
 ````xml
 <Association Name="FK_Products_Categories">
@@ -130,18 +130,18 @@ Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインス�
 ````
 2つの関連するEntityTypeとそれぞれのKeyが定義されています。`Multiplicity`にて関連の多重度が定義されています。いままでRDBMSに携わっていた方であれば、容易に理解できると思います。
 
-## EntityConteinerとAssociationSet、EntitySet
+## EntityContainerとAssociationSet、EntitySet
 
-### EntityConteiner
+### EntityContainer
 
 ODataServiceが外部に公開するI/Fを納めたコンテナ定義です。  
-上で挙げた`EntityType`や`Association`はODataService内部の定義であって、外部の利用者はEntityConteinerにて公開されているI/Fを利用します。
+上で挙げた`EntityType`や`Association`はODataService内部の定義であって、外部の利用者はEntityContainerにて公開されているI/Fを利用します。
 
 ### EntitySet
 
 EntityTypeの外部公開I/F名。`Product`の場合、EntitySetの名前が`Products`となっているため、外部からアクセスする場合は`Products`を利用します。慣例でEntityTypeの複数系で、Entitiesを表すことが多いようです。
 
-以下にEntityConteinerとEntitySetを抜粋します。
+以下にEntityContainerとEntitySetを抜粋します。
 
 ````xml
 <Schema xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ODataWeb.Northwind.Model">
@@ -162,7 +162,7 @@ EntityTypeの外部公開I/F名。`Product`の場合、EntitySetの名前が`Pro
 
 ### AssociationSet
 
-EntitySetと同じくAssociationの外部公開I/F名。以下が`FK_Products_Categories`のAssociationSet定義です。AssociationSetもEntityConteiner内部に格納されています。
+EntitySetと同じくAssociationの外部公開I/F名。以下が`FK_Products_Categories`のAssociationSet定義です。AssociationSetもEntityContainer内部に格納されています。
 
 
 ````xml

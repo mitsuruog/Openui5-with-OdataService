@@ -12,9 +12,9 @@ ODataServiceはNorthwindを利用します。Metadataを確認する場合はこ
 
 ## OdataService
 
-### EntityConteiner(endpoint)
+### EntityContainer(endpoint)
 
-では、ODataServiceが提供するEntityConteinerの情報を取得します。このURLが以降のデータアクセスのルートとなるため、以降endpointと呼びます。  
+では、ODataServiceが提供するEntityContainerの情報を取得します。このURLが以降のデータアクセスのルートとなるため、以降endpointと呼びます。  
 <http://services.odata.org/V2/Northwind/Northwind.svc/>
 
 結果は以下の通りです。  
