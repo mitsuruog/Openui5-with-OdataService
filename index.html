@@ -2,10 +2,10 @@
 <html>
 
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Openui5-with-odataservice : How to integrate OdataService in OpenUI5" />
-    <meta name="keywords" content="OpenUI5,SAPUI5,UI5,OData,ODataService,Northwind,SAP,mobile,mobick">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Openui5-with-odataservice : How to integrate OdataService in OpenUI5">
+
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Openui5-with-odataservice</title>
@@ -151,7 +151,7 @@
 このような状況のためか、ODataに対する世間の注目度はいまいちだったような気がします。</p>
 
 <h3>
-<a name="ui%E3%83%97%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%A8odata%E3%81%AE%E7%B5%B1%E5%90%88" class="anchor" href="#ui%E3%83%97%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%A8odata%E3%81%AE%E7%B5%B1%E5%90%88"><span class="octicon octicon-link"></span></a>UIプレームワークとODataの統合</h3>
+<a name="ui%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%A8odata%E3%81%AE%E7%B5%B1%E5%90%88" class="anchor" href="#ui%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%A8odata%E3%81%AE%E7%B5%B1%E5%90%88"><span class="octicon octicon-link"></span></a>UIフレームワークとODataの統合</h3>
 
 <p>そこで登場したものがODataをサポートするUIフレームの登場です。<br>
 ここでのUIフレームワークとは、従来のクライアントMVCの機能を持ち、UIコンポーネントも持つものです。<br>
@@ -177,7 +177,7 @@ OpenUI5というパートナーを得たことで、ODataの仕様は本当の�
 バックエンドへの問い合わせは通常の<code>GET</code>、<code>POST</code>、<code>PUT</code>、<code>DELETE</code>で行い、返されるデータも<code>xml</code>、 <code>json</code>、<code>atom</code>形式です。</p>
 
 <p>しかし、ODataはバックエンドとの間の複数のHTTP問い合わせを統合して標準化しています。そしてODataを返すバックエンドがODataServiceと呼ばれるものです。<br>
-ODataServiceは、内部に「インターフェース層」「実体化層」「抽象化層」の3つで構成されています。フロントエンドがODataServiceにアクセスする際は、ODataのデータモデルを提供する「Metadata」か、実際のデータAPIインターフェース「EntityConteiner」のどちらかを呼び出します。</p>
+ODataServiceは、内部に「インターフェース層」「実体化層」「抽象化層」の3つで構成されています。フロントエンドがODataServiceにアクセスする際は、ODataのデータモデルを提供する「Metadata」か、実際のデータAPIインターフェース「EntityContainer」のどちらかを呼び出します。</p>
 
 <p>こちらが、ODataServiceについての概念図です。<br><img src="docs/img/3-1.png" alt="ODataService概念図">
 （上の内容については、筆者の独自の解釈が含まれています。誤りがある可能性があります。）</p>
@@ -287,7 +287,7 @@ Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインス�
 <h3>
 <a name="association-1" class="anchor" href="#association-1"><span class="octicon octicon-link"></span></a>Association</h3>
 
-<p>2つ以上のEntiryTypeの関連を定義したものです。RDBMSのスキーマ定義における外部キーに相当します。先ほどの2つのEntityType<code>Category</code>と<code>Entity</code>には関連がありますので、それを見てみましょう。</p>
+<p>2つ以上のEntityTypeの関連を定義したものです。RDBMSのスキーマ定義における外部キーに相当します。先ほどの2つのEntityType<code>Category</code>と<code>Entity</code>には関連がありますので、それを見てみましょう。</p>
 
 <div class="highlight highlight-xml"><pre><span class="nt">&lt;Association</span> <span class="na">Name=</span><span class="s">"FK_Products_Categories"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Categories"</span> <span class="na">Type=</span><span class="s">"NorthwindModel.Category"</span> <span class="na">Multiplicity=</span><span class="s">"0..1"</span><span class="nt">/&gt;</span>
@@ -306,20 +306,20 @@ Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインス�
 <p>2つの関連するEntityTypeとそれぞれのKeyが定義されています。<code>Multiplicity</code>にて関連の多重度が定義されています。いままでRDBMSに携わっていた方であれば、容易に理解できると思います。</p>
 
 <h2>
-<a name="entityconteiner%E3%81%A8associationsetentityset" class="anchor" href="#entityconteiner%E3%81%A8associationsetentityset"><span class="octicon octicon-link"></span></a>EntityConteinerとAssociationSet、EntitySet</h2>
+<a name="entitycontainer%E3%81%A8associationsetentityset" class="anchor" href="#entitycontainer%E3%81%A8associationsetentityset"><span class="octicon octicon-link"></span></a>EntityContainerとAssociationSet、EntitySet</h2>
 
 <h3>
-<a name="entityconteiner" class="anchor" href="#entityconteiner"><span class="octicon octicon-link"></span></a>EntityConteiner</h3>
+<a name="entitycontainer" class="anchor" href="#entitycontainer"><span class="octicon octicon-link"></span></a>EntityContainer</h3>
 
 <p>ODataServiceが外部に公開するI/Fを納めたコンテナ定義です。<br>
-上で挙げた<code>EntityType</code>や<code>Association</code>はODataService内部の定義であって、外部の利用者はEntityConteinerにて公開されているI/Fを利用します。</p>
+上で挙げた<code>EntityType</code>や<code>Association</code>はODataService内部の定義であって、外部の利用者はEntityContainerにて公開されているI/Fを利用します。</p>
 
 <h3>
 <a name="entityset" class="anchor" href="#entityset"><span class="octicon octicon-link"></span></a>EntitySet</h3>
 
 <p>EntityTypeの外部公開I/F名。<code>Product</code>の場合、EntitySetの名前が<code>Products</code>となっているため、外部からアクセスする場合は<code>Products</code>を利用します。慣例でEntityTypeの複数系で、Entitiesを表すことが多いようです。</p>
 
-<p>以下にEntityConteinerとEntitySetを抜粋します。</p>
+<p>以下にEntityContainerとEntitySetを抜粋します。</p>
 
 <div class="highlight highlight-xml"><pre><span class="nt">&lt;Schema</span> <span class="na">xmlns:d=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices"</span> <span class="na">xmlns:m=</span><span class="s">"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"</span> <span class="na">xmlns=</span><span class="s">"http://schemas.microsoft.com/ado/2008/09/edm"</span> <span class="na">Namespace=</span><span class="s">"ODataWeb.Northwind.Model"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;EntityContainer</span> <span class="na">xmlns:p7=</span><span class="s">"http://schemas.microsoft.com/ado/2009/02/edm/annotation"</span> <span class="na">Name=</span><span class="s">"NorthwindEntities"</span> <span class="na">p7:LazyLoadingEnabled=</span><span class="s">"true"</span> <span class="na">m:IsDefaultEntityContainer=</span><span class="s">"true"</span><span class="nt">&gt;</span>
@@ -340,7 +340,7 @@ Javaで置き換えるとクラスがEntityTypeで、Entitiesはそのインス�
 <h3>
 <a name="associationset" class="anchor" href="#associationset"><span class="octicon octicon-link"></span></a>AssociationSet</h3>
 
-<p>EntitySetと同じくAssociationの外部公開I/F名。以下が<code>FK_Products_Categories</code>のAssociationSet定義です。AssociationSetもEntityConteiner内部に格納されています。</p>
+<p>EntitySetと同じくAssociationの外部公開I/F名。以下が<code>FK_Products_Categories</code>のAssociationSet定義です。AssociationSetもEntityContainer内部に格納されています。</p>
 
 <div class="highlight highlight-xml"><pre><span class="nt">&lt;AssociationSet</span> <span class="na">Name=</span><span class="s">"FK_Products_Categories"</span> <span class="na">Association=</span><span class="s">"NorthwindModel.FK_Products_Categories"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;End</span> <span class="na">Role=</span><span class="s">"Categories"</span> <span class="na">EntitySet=</span><span class="s">"Categories"</span><span class="nt">/&gt;</span>
@@ -372,9 +372,9 @@ URLのクエリパラメータをいくつか追加していくことでODataSer
 <a name="odataservice" class="anchor" href="#odataservice"><span class="octicon octicon-link"></span></a>OdataService</h2>
 
 <h3>
-<a name="entityconteinerendpoint" class="anchor" href="#entityconteinerendpoint"><span class="octicon octicon-link"></span></a>EntityConteiner(endpoint)</h3>
+<a name="entitycontainerendpoint" class="anchor" href="#entitycontainerendpoint"><span class="octicon octicon-link"></span></a>EntityContainer(endpoint)</h3>
 
-<p>では、ODataServiceが提供するEntityConteinerの情報を取得します。このURLが以降のデータアクセスのルートとなるため、以降endpointと呼びます。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/">http://services.odata.org/V2/Northwind/Northwind.svc/</a></p>
+<p>では、ODataServiceが提供するEntityContainerの情報を取得します。このURLが以降のデータアクセスのルートとなるため、以降endpointと呼びます。<br><a href="http://services.odata.org/V2/Northwind/Northwind.svc/">http://services.odata.org/V2/Northwind/Northwind.svc/</a></p>
 
 <p>結果は以下の通りです。<br>
 （レスポンスで取得した結果のデータが非常に大きいため、中身を割愛しながら説明していきます。ご了承ください。）</p>
@@ -2232,6 +2232,8 @@ ODataをOpenUI5とどのように統合すれば良いかについては、理�
 <p>まだ、ODataServiceをどのように構築するかという課題はありますが、ODataServiceとUIフレームワークを組み合わせる事によって得られる、高い隠蔽化と標準化によって非常に効率的かつメンテナンス性良くWebアプリケーションが構築できる可能性があることが分かります。</p>
 
 <p><strong><a href="#table">[⬆]</a></strong></p>
+
+<p><a href="https://github.com/mitsuruog/Openui5-with-OdataService"><img src="https://ga-beacon.appspot.com/UA-53035841-2/Openui5-with-OdataService/readme" alt="Analytics"></a></p>
       </section>
     </div>
 
