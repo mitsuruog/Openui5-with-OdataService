@@ -30,4 +30,10 @@ How to integrate OdataService in OpenUI5
 
 特にODataが持つURLパラメータを組み合わせによる柔軟なデータアクセス方法と、OpenUI5というUIフレームワークを組み合わせた場合に実現できる、データアクセスからUIへのフィードバックがシームレスに統合され隠蔽された、これからの企業向けWebアプリケーション開発における「OpenUI5＋ODataService」という新しい可能性（選択肢）を感じてもらえればと思います。
 
-OpenUI5のサポートが「V2」までであるため、ODataのバージョンは「2」を前提に説明します。
+このチュートリアルはODataV2をベースにしています。
+
+Main thema this tutorial to build Web applications using the OpenUI5 and ODataService, OData, OpenUI5 in how to handle good.
+
+From this obfuscated, and seamlessly integrate feedback UI from data access for enterprise Web application development can provide if you combine the UI framework by combining flexible data access methods and OpenUI5 especially with OData URL parameter "OpenUI 5 + ODataService" that would give me feel new possibilities (choices).
+
+This tutorial is based on OData V2.
